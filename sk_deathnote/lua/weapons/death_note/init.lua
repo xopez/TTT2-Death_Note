@@ -3,7 +3,9 @@
 
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
+AddCSLuaFile( "../../deathnote_config.lua" )
 include( 'shared.lua' )
+include( '../../deathnote_config.lua' )
 
 SWEP.Weight = 5
 SWEP.AutoSwitchTo = true
@@ -33,9 +35,31 @@ util.AddNetworkString( "pName1" )
 				if killP:Alive() then
 					killP:Kill()
 					deathnoteuseage = 0
+					for k,v in pairs( player.GetAll() ) do
+						if ulx_installed then
+							if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+								v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..killP:Nick())
+							end
+						else
+							if v:IsAdmin() then
+								v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..killP:Nick())
+							end
+						end
+					end
 				else
 					ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Dead")
 					deathnoteuseage = 0
+					for k,v in pairs( player.GetAll() ) do
+						if ulx_installed then
+							if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+								v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the deathnote on "..killP:Nick().." but failed")
+							end
+						else
+							if v:IsAdmin() then
+								v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the deathnote on "..killP:Nick().." but failed")
+							end
+						end
+					end
 				end
 			end)
 		else
@@ -51,8 +75,28 @@ end )
 		local killP = player.GetByID(plyName)
 		if killP:Alive() then
 			ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Alive")
+			if ulx_installed then
+				if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+					v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the lifenote on "..killP:Nick().." but failed")
+				end
+			else
+				if v:IsAdmin() then
+					v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the lifenote on "..killP:Nick().." but failed")
+				end
+			end
 		else
 			killP:Spawn()
+			for k,v in pairs( player.GetAll() ) do
+				if ulx_installed then
+					if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+						v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the lifenote on "..killP:Nick())
+					end
+				else
+					if v:IsAdmin() then
+						v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the lifenote on "..killP:Nick())
+					end
+				end
+			end
 		end
 	end )	
 end
@@ -78,9 +122,31 @@ function SWEP:PrimaryAttack()
 					if trKill:Alive() then
 						trKill:Kill()
 						deathnoteuseage = 0
+						for k,v in pairs( player.GetAll() ) do
+							if ulx_installed then
+								if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..killP:Nick())
+								end
+							else
+								if v:IsAdmin() then
+									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..killP:Nick())
+								end
+							end
+						end
 					else
 						ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Dead")
 						deathnoteuseage = 0
+						for k,v in pairs( player.GetAll() ) do
+							if ulx_installed then
+								if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the deathnote on "..killP:Nick().." but failed")
+								end
+							else
+								if v:IsAdmin() then
+									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the deathnote on "..killP:Nick().." but failed")
+								end
+							end
+						end
 					end
 				end)
 				else

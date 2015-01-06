@@ -83,19 +83,10 @@ DNText:SetTextColor(Color(0, 0, 0, 255))
 local Workshop = vgui.Create( "DButton" )
 Workshop:SetParent(DNInfo)
 Workshop:SetSize( 90, 30 )
-Workshop:SetPos( 5, 271 )
+Workshop:SetPos( 5, 306 )
 Workshop:SetText( "Workshop Item" )
 Workshop.DoClick = function( button )
 	gui.OpenURL("http://steamcommunity.com/sharedfiles/filedetails/?id=278185787&searchtext=")
-end
-
-local LNIdea = vgui.Create( "DButton" )
-LNIdea:SetParent(DNInfo)
-LNIdea:SetSize( 90, 30 )
-LNIdea:SetPos( 5, 306 )
-LNIdea:SetText( "Life Note Idea" )
-LNIdea.DoClick = function( button )
-	gui.OpenURL("https://www.youtube.com/watch?v=mtODX-055g8")
 end
 
 local SWEPConstructionKit = vgui.Create( "DButton" )
@@ -107,28 +98,10 @@ SWEPConstructionKit.DoClick = function( button )
 	gui.OpenURL("http://steamcommunity.com/sharedfiles/filedetails/?id=109724869&requirelogin=true")
 end
 
-local Skyline = vgui.Create( "DButton" )
-Skyline:SetParent(DNInfo)
-Skyline:SetSize( 120, 30 )
-Skyline:SetPos( 100, 271 )
-Skyline:SetText( "Skyline Group" )
-Skyline.DoClick = function( button )
-	gui.OpenURL("http://skylinegaming.proboards.com/")
-end
-
-local DNButton = vgui.Create( "DButton" )
-DNButton:SetParent(DNInfo)
-DNButton:SetSize( 90, 30 )
-DNButton:SetPos( 225, 306 )
-DNButton:SetText( "DeathNote Model" )
-DNButton.DoClick = function( button )
-	gui.OpenURL("http://www.garrysmod.org/downloads/?a=view&id=40399")
-end
-
 local Close = vgui.Create( "DButton" )
 Close:SetParent(DNInfo)
 Close:SetSize( 90, 30 )
-Close:SetPos( 225, 271 )
+Close:SetPos( 225, 306 )
 Close:SetText( "Close Menu" )
 Close.DoClick = function( button )
 		DeathNote:Close() 

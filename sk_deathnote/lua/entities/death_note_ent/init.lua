@@ -1,8 +1,10 @@
 
 AddCSLuaFile( "cl_init.lua" ) 
 AddCSLuaFile( "shared.lua" )
- 
+AddCSLuaFile( "../../deathnote_config.lua" ) 
+
 include('shared.lua')
+include( '../../deathnote_config.lua' )
 local entdeathnoteuseage = 0
  
 function ENT:Initialize()
@@ -47,19 +49,37 @@ util.AddNetworkString("DN_CloseMenu")
 		local plyName = tonumber(net.ReadString())
 		local killP = player.GetByID(plyName)
 		if entdeathnoteuseage == 0 then
-		print ("Death-note ENT Started")
 		if killP:Alive() then
 			entdeathnoteuseage = 1
-			print ("Death-note on Cooldown")
 			timer.Simple( 5, function()
 				if killP:Alive() then
 					killP:Kill()
-					print ("Death-note Killed Target")
 					entdeathnoteuseage = 0
+					for k,v in pairs( player.GetAll() ) do
+						if ulx_installed then
+							if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+								v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." has used the deathnote on "..killP:Nick())
+							end
+						else
+							if v:IsAdmin() then
+								v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." has used the deathnote on "..killP:Nick())
+							end
+						end
+					end
 				else
 					ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Dead")
-					print ("Death-note Target Already Dead")
 					entdeathnoteuseage = 0
+					for k,v in pairs( player.GetAll() ) do
+						if ulx_installed then
+							if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+								v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." tried the deathnote on "..killP:Nick().." but failed")
+							end
+						else
+							if v:IsAdmin() then
+								v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." tried the deathnote on "..killP:Nick().." but failed")
+							end
+						end
+					end
 				end
 			end)
 		else
@@ -76,8 +96,28 @@ end )
 		local killP = player.GetByID(plyName)
 		if killP:Alive() then
 			ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Alive")
+			if ulx_installed then
+				if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+					v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." tried the lifenote on "..killP:Nick().." but failed")
+				end
+			else
+				if v:IsAdmin() then
+					v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." tried the lifenote on "..killP:Nick().." but failed")
+				end
+			end
 		else
 			killP:Spawn()
+			for k,v in pairs( player.GetAll() ) do
+				if ulx_installed then
+					if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+						v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." has used the lifenote on "..killP:Nick())
+					end
+				else
+					if v:IsAdmin() then
+						v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." has used the lifenote on "..killP:Nick())
+					end
+				end
+			end
 		end
 	end )	
 end

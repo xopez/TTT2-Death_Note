@@ -3,7 +3,10 @@
 
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
+AddCSLuaFile( "../../deathnote_config.lua" )
 include( 'shared.lua' )
+include( '../../deathnote_config.lua' )
+
 
 SWEP.Weight = 5
 SWEP.AutoSwitchTo = true
@@ -46,6 +49,7 @@ util.AddNetworkString( "tttpName1" )
 					if killP:Alive() then
 						killP:Kill()
 						ply:StripWeapon("death_note_ttt")
+						killP:PrintMessage(HUD_PRINTTALK,"You died via the Death-Note")
 					else
 						ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Dead, You did not lose the Death-Note")
 					end
@@ -101,12 +105,13 @@ function SWEP:PrimaryAttack()
 						if trKill:Alive() then
 							trKill:Kill()
 							ply:StripWeapon("death_note_ttt")
+							killP:PrintMessage(HUD_PRINTTALK,"You died via the Death-Note")
 						else
 							ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Dead, You did not lose the Death-Note")
 						end
 					else
 					ply:StripWeapon("death_note_ttt")
-					ply:PrintMessage(HUD_PRINTTALK,"You rolled a "..rolled.." and "..rolled1.."And lost the Death-Note")
+					ply:PrintMessage(HUD_PRINTTALK,"You rolled a "..rolled.." and "..rolled1.." And lost the Death-Note")
 					tttdeathnoteuseage = 0
 					end
 				end)

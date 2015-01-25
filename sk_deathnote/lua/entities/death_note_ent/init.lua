@@ -6,7 +6,8 @@ AddCSLuaFile( "../../deathnote_config.lua" )
 include('shared.lua')
 include( '../../deathnote_config.lua' )
 local entdeathnoteuseage = 0
- 
+local TheDeathType = "heartattack"
+
 function ENT:Initialize()
 	self:SetModel( "models/death_note/deathnote.mdl" )
 	self:PhysicsInit( SOLID_VPHYSICS )      -- Make us work with physics,
@@ -39,11 +40,17 @@ end
 if ( SERVER ) then
 util.AddNetworkString( "ENTpName" )
 util.AddNetworkString( "ENTpName2" )
-util.AddNetworkString("DN_CloseMenu")
+util.AddNetworkString( "DN_CloseMenu" )
+util.AddNetworkString( "ENTDeathType" )
 
 	net.Receive("DN_CloseMenu", function(length, ply)
 		ply.MenuOpen = false
 	end)
+	
+	net.Receive( "ENTDeathType", function( len, ply )
+		TheDeathType = string.lower(net.ReadString())
+	end )
+	
 	net.Receive( "ENTpName", function( len, ply )
 		ply.MenuOpen = false
 		local plyName = tonumber(net.ReadString())
@@ -53,16 +60,24 @@ util.AddNetworkString("DN_CloseMenu")
 			entdeathnoteuseage = 1
 			timer.Simple( 5, function()
 				if killP:Alive() then
-					killP:Kill()
+					if TheDeathType == "heartattack" then
+						killP:Kill()
+					end
+					if TheDeathType == "burn" then
+						if killP:Health() >= 100 then
+							killP:SetHealth(100)
+						end
+						killP:Ignite( 5000000 )
+					end
 					entdeathnoteuseage = 0
 					for k,v in pairs( player.GetAll() ) do
 						if ulx_installed then
 							if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-								v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." has used the deathnote on "..killP:Nick())
+								v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." has used the deathnote on "..killP:Nick()..". ("..TheDeathType..")")
 							end
 						else
 							if v:IsAdmin() then
-								v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." has used the deathnote on "..killP:Nick())
+								v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." has used the deathnote on "..killP:Nick()..". ("..TheDeathType..")")
 							end
 						end
 					end

@@ -11,7 +11,7 @@ SWEP.Weight = 5
 SWEP.AutoSwitchTo = true
 SWEP.AutoSwitchFrom = true
 local deathnoteuseage = 0
-local dndebuged = 0  -- change this to 1 if you want admins to be able reset the cooldown
+local TheDeathType = "heartattack"
 
 if CLIENT then
 else
@@ -24,6 +24,11 @@ end
 if ( SERVER ) then
 util.AddNetworkString( "pName" )
 util.AddNetworkString( "pName1" )
+util.AddNetworkString( "DeathType" )
+
+	net.Receive( "DeathType", function( len, ply )
+		TheDeathType = string.lower(net.ReadString())
+	end )
 
 	net.Receive( "pName", function( len, ply )
 		local plyName = tonumber(net.ReadString())
@@ -33,16 +38,24 @@ util.AddNetworkString( "pName1" )
 			deathnoteuseage = 1
 			timer.Simple( 5, function()
 				if killP:Alive() then
-					killP:Kill()
+					if TheDeathType == "heartattack" then
+						killP:Kill()
+					end
+					if TheDeathType == "burn" then
+						if killP:Health() >= 100 then
+							killP:SetHealth(100)
+						end
+						killP:Ignite( 5000000 )
+					end
 					deathnoteuseage = 0
 					for k,v in pairs( player.GetAll() ) do
 						if ulx_installed then
 							if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-								v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..killP:Nick())
+								v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..killP:Nick()..". ("..TheDeathType..")")
 							end
 						else
 							if v:IsAdmin() then
-								v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..killP:Nick())
+								v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..killP:Nick()..". ("..TheDeathType..")")
 							end
 						end
 					end
@@ -68,7 +81,7 @@ util.AddNetworkString( "pName1" )
 		else
 			ply:PrintMessage(HUD_PRINTTALK,"The deathnote is in cooldown.")
 		end
-end )
+	end )
 	
 	net.Receive( "pName1", function( len, ply )
 		local plyName = tonumber(net.ReadString())
@@ -156,7 +169,7 @@ function SWEP:PrimaryAttack()
 		end
 	end
 	if self.Owner:GetEyeTrace().Entity:IsNPC() then
-		self.Owner:GetEyeTrace().Entity:Fire("sethealth", "0", 0)
+				self.Owner:GetEyeTrace().Entity:Fire("sethealth", "0", 0)
 	end	
 end
 	

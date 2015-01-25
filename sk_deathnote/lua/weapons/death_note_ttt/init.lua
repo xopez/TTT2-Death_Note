@@ -12,7 +12,6 @@ SWEP.Weight = 5
 SWEP.AutoSwitchTo = true
 SWEP.AutoSwitchFrom = true
 local tttdeathnoteuseage = 0
-local tttdndebuged = 0  -- change this to 1 if you want admins to be able reset the cooldown
 
 if CLIENT then
 else
@@ -80,7 +79,7 @@ util.AddNetworkString( "tttpName1" )
 end
 
 function SWEP:Reload()
-	if tttdndebuged == 1 then
+	if dndebuged == 1 then
 		if self.Owner:IsAdmin() then
 		deathnoteuseage = 0
 		self.Owner:PrintMessage(HUD_PRINTTALK,"You Reset the deathnote")

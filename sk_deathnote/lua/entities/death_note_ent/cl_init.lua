@@ -39,7 +39,20 @@ DeathNotePlayerList.OnClickLine = function(parent, line, isselected)
 	net.SendToServer()
 	DeathNote:Close()
 end
- 
+
+local DNDeathType = vgui.Create( "DComboBox" )
+DNDeathType:SetParent(DeathNotePlayerList)
+DNDeathType:SetPos( 280, 315 )
+DNDeathType:SetSize( 100, 20 )
+DNDeathType:SetValue( "Death Type" )
+DNDeathType:AddChoice( "HeartAttack" )
+DNDeathType:AddChoice( "Burn" )
+DNDeathType.OnSelect = function( panel, index, value )
+	net.Start( "ENTDeathType" )
+		net.WriteString(value)
+	net.SendToServer()
+end 
+
 local LifeNotePlayerList = vgui.Create("DListView")
 LifeNotePlayerList:SetPos(0, 22)
 LifeNotePlayerList:SetSize(300, 300)

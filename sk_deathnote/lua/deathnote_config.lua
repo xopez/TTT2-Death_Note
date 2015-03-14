@@ -2,10 +2,10 @@
 --General Configure--
 ---------------------
 
-ulx_installed = true 
+ulx_installed = false 
 -- If you use ULX for your Admin ranks
 
-Debug_Mode_DN = true  
+Debug_Mode_DN = false  
 -- "Default: False" change this to true if you want admins to be able reset the cooldown
 
 ulx_premissions = {"superadmin","admin","operator"}
@@ -20,7 +20,7 @@ ulx_premissions = {"superadmin","admin","operator"}
 TTT_DN_DeathTime 	= 15 	
 -- "Default: 15" change how long intill the target dies form the DN
 
-TTT_DN_AlwaysDies 	= true 	
+TTT_DN_AlwaysDies 	= false 	
 -- "Default: False" If set true it will 100% kill / even though you can change TTT_DN_Chance to 1 for it this is more neater and does not do the roll
 
 TTT_DN_Chance 		= 4		

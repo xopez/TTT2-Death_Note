@@ -26,6 +26,7 @@ function SWEP:Initialize()
 	// other initialize code goes here
 
 	self:SetWeaponHoldType( self.HoldType )
+
 	
 	if CLIENT then
 	
@@ -498,7 +499,6 @@ if CLIENT then
 end
 
 
-
 SWEP.HoldType = "slam"
 SWEP.ViewModelFOV = 70
 SWEP.ViewModelFlip = false
@@ -506,19 +506,18 @@ SWEP.ViewModel = "models/weapons/v_slam.mdl"
 SWEP.WorldModel = "models/weapons/w_slam.mdl"
 SWEP.ShowViewModel = true
 SWEP.ShowWorldModel = false
-SWEP.ViewModelBoneMods = {
-	["Detonator"] = { scale = Vector(0.009, 0.009, 0.009), pos = Vector(0, 0, 0), angle = Angle(0, 0, 0) },
-	["Slam_base"] = { scale = Vector(0.009, 0.009, 0.009), pos = Vector(0, 0, 0), angle = Angle(0, 0, 0) }
-}
 
+SWEP.ViewModelBoneMods = {
+	["Slam_base"] = { scale = Vector(0.009, 0.009, 0.009), pos = Vector(0, 0, 0), angle = Angle(0, 0, 0) },
+	["Detonator"] = { scale = Vector(0.009, 0.009, 0.009), pos = Vector(0, 0, 0), angle = Angle(0, 0, 0) }
+}
 SWEP.VElements = {
 	["Deathnote Pen"] = { type = "Model", model = "models/death_note/dn_pen.mdl", bone = "Detonator", rel = "", pos = Vector(9, -64, 22.6), angle = Angle(-92.338, 43.247, 0), size = Vector(1, 1, 1), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} },
-	["Deathnote Book"] = { type = "Model", model = "models/death_note/deathnote_open1.mdl", bone = "Slam_base", rel = "", pos = Vector(-5.715, -67.014, 22.337), angle = Angle(-31.559, 45.583, -8.183), size = Vector(0.5, 0.5, 0.5), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
+	["Deathnote Book"] = { type = "Model", model = "models/death_note/deathnote_open1.mdl", bone = "Slam_base", rel = "", pos = Vector(-5.716, -67.014, 22.336), angle = Angle(-31.56, 45.583, -8.183), size = Vector(0.5, 0.5, 0.5), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
 }
-
 SWEP.WElements = {
 	["Deathnote Pen"] = { type = "Model", model = "models/death_note/dn_pen.mdl", bone = "ValveBiped.Bip01_L_Hand", rel = "", pos = Vector(4, 1, 4), angle = Angle(180, 0, 0), size = Vector(1, 1, 1), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} },
-	["Deathnote Book"] = { type = "Model", model = "models/death_note/deathnote.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(3.635, 3.635, -0.519), angle = Angle(0, 0, 180), size = Vector(0.5, 0.5, 0.5), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
+	["Deathnote Book"] = { type = "Model", model = "models/death_note/deathnote.mdl", bone = "ValveBiped.Bip01_R_Hand", rel = "", pos = Vector(3.634, 3.634, -0.519), angle = Angle(0, 0, 180), size = Vector(0.5, 0.5, 0.5), color = Color(255, 255, 255, 255), surpresslightning = false, material = "", skin = 0, bodygroup = {} }
 }
 
 
@@ -529,9 +528,9 @@ SWEP.PrintName = "Death-Note"
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = true
 
-SWEP.Author = "Bluey And Rowan"
+SWEP.Author = "Blue-Pentagram And TheRowan"
 SWEP.Instructions = "Left click to kill who your looking at - Right click to open a GUI"
-SWEP.Contact = "http://skylinegaming.proboards.com/"
+SWEP.Contact = "http://steamcommunity.com/workshop/filedetails/discussion/278185787/617330406650185272/"
 SWEP.Purpose = "To kill or respawn anyone"
 SWEP.Category = "Death Note"
 SWEP.Spawnable = true

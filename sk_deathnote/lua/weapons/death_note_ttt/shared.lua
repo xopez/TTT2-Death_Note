@@ -80,7 +80,7 @@ if CLIENT then
 	SWEP.Icon = "VGUI/entities/death_note"
 	SWEP.EquipMenuData = {
       type = "Weapon",
-      desc = "A Deathnote able to kill or bring back anyone."
+      desc = "To Help you kill the Innocents and Detectives."
 	};
 	SWEP.vRenderOrder = nil
 	function SWEP:ViewModelDrawn()
@@ -534,10 +534,10 @@ SWEP.PrintName = "Death-Note"
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = true
 
-SWEP.Author = "Bluey And Rowan"
+SWEP.Author = "Blue-Pentagram And TheRowan"
 SWEP.Instructions = "Left click to kill who your looking at - Right click to open a GUI"
-SWEP.Contact = "http://skylinegaming.proboards.com/"
-SWEP.Purpose = "To kill or respawn anyone"
+SWEP.Contact = "http://steamcommunity.com/workshop/filedetails/discussion/278185787/617330406650185272/"
+SWEP.Purpose = "To Help you kill the Innocents and Detectives."
 SWEP.Category = "Death Note"
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false

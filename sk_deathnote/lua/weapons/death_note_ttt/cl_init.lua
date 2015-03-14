@@ -47,7 +47,9 @@ for k,v in pairs(player.GetAll()) do
 	if v:GetRole() == 0 then Role = "Innocent"  end
 	if v:GetRole() == 1 then Role = "Traitor" end
 	if v:GetRole() == 2 then Role = "Detective" end
-	DeathNotePlayerList:AddLine(v:Nick(),Role,v:EntIndex()) -- Add lines
+	if table.HasValue({0,2}, v:GetRole()) then
+		DeathNotePlayerList:AddLine(v:Nick(),Role,v:EntIndex()) -- Add lines
+	end
 end
 DeathNotePlayerList.OnClickLine = function(parent, line, isselected)
 	net.Start( "tttpName" )

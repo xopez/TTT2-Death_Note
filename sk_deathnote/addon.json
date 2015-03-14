@@ -1,0 +1,11 @@
+{
+	"title"		:	"Death-Note", 
+	"type"		:	"weapon", 
+	"tags"		:	[ "fun", "scenic" ], 
+	"ignore"	:
+	[
+		"*.psd", 
+		"*.vcproj", 
+		"*.svn*"
+	]
+}

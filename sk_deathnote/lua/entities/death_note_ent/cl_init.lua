@@ -77,18 +77,16 @@ DNInfo:SetPos(10, 31)
 local DNText = vgui.Create("DLabel")
 DNText:SetParent(DNInfo)
 DNText:SetPos(15, 15)
-DNText:SetText([[Death Note Info:
+DNText:SetText([[
+Death Note Info:
+
 This SWEP is made for multiplayer servers,
-The idea of the Death Note came from the actual Death Note show.
+The idea of the Death Note came from the actual Death Note Anime/Manga.
 While Life Note come from Smosh.
 
-This SWEP was made by Bluey and Rowan.
-The model is made by FluxMage (GarrysMod.org)
+This SWEP was made by Blue-Pentagram and TheRowan.
+The model is made by FluxMage what was on (GarrysMod.org).
 With help from the SWEP Construction Kit for the view and world model.
-
-DeathNote Usage:
-Entity Version (same as base)
-- A 5 seconds wait for the target to die.
 ]])
 DNText:SizeToContents()
 DNText:SetTextColor(Color(0, 0, 0, 255))

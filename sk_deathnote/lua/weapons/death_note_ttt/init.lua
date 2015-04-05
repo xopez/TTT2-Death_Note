@@ -7,24 +7,23 @@ AddCSLuaFile( "../../deathnote_config.lua" )
 include( 'shared.lua' )
 include( '../../deathnote_config.lua' )
 
-
 SWEP.Weight = 5
 SWEP.AutoSwitchTo = true
 SWEP.AutoSwitchFrom = true
 local tttdeathnoteuseage = 0
+local TheDeathType = "heartattack"
 
 if CLIENT then
 else
-   function SWEP:GetRepeating()
-      local ply = self.Owner
-      return IsValid(ply)
-   end
+	function SWEP:GetRepeating()
+		local ply = self.Owner
+		return IsValid(ply)
+	end
 end
 
 function DNRESET()
 	if tttdeathnoteuseage == 1 then
 		tttdeathnoteuseage = 0
-		print ("Deathnote Glitched and has been forced Reseted")
 	end
 end
 hook.Add( "TTTBeginRound", "deathnotereset", DNRESET )
@@ -32,7 +31,12 @@ hook.Add( "TTTBeginRound", "deathnotereset", DNRESET )
 if ( SERVER ) then
 util.AddNetworkString( "tttpName" )
 util.AddNetworkString( "tttpName1" )
+util.AddNetworkString( "tttDeathType" )
 
+	net.Receive( "tttDeathType", function( len, ply )
+		TheDeathType = string.lower(net.ReadString())
+	end )
+	
 	net.Receive( "tttpName", function( len, ply )
 		local plyName = tonumber(net.ReadString())
 		local killP = player.GetByID(plyName)
@@ -43,12 +47,24 @@ util.AddNetworkString( "tttpName1" )
 			if TTT_DN_AlwaysDies then
 				tttdeathnoteuseage = 0
 				if killP:Alive() then
-					killP:Kill()
-					ply:StripWeapon("death_note_ttt")
-					killP:PrintMessage(HUD_PRINTTALK,"DeathNote: died via the Death-Note killed by '"..ply:Nick().."'")
-					for k,v in pairs(player.GetAll()) do
-						v:PrintMessage(HUD_PRINTTALK,"DeathNote: "..killP:Nick().." Has died via the DeathNote.")
+					if TheDeathType == "heartattack" then
+						killP:Kill()
+						killP:PrintMessage(HUD_PRINTTALK,"DeathNote: Died via the Death-Note killed by '"..ply:Nick().."'")
+						for k,v in pairs(player.GetAll()) do
+							v:PrintMessage(HUD_PRINTTALK,"DeathNote: "..killP:Nick()..", Has died via the DeathNote.")
+						end
 					end
+					if TheDeathType == "burn" then
+						if killP:Health() >= 100 then
+							killP:SetHealth(100)
+						end
+						killP:Ignite( 5000000 )
+						killP:PrintMessage(HUD_PRINTTALK,"DeathNote: Burned via the Death-Note.")
+						for k,v in pairs(player.GetAll()) do
+							v:PrintMessage(HUD_PRINTTALK,"DeathNote: "..killP:Nick()..", Burned via the Death-Note.")
+						end
+					end
+					ply:StripWeapon("death_note_ttt")
 				else
 					ply:PrintMessage(HUD_PRINTTALK,"DeathNote: That Person already dead, Choose a new target.")
 				end
@@ -59,12 +75,24 @@ util.AddNetworkString( "tttpName1" )
 					ply:PrintMessage(HUD_PRINTTALK,"DeathNote: You rolled a "..rolled.." and "..rolled1)
 					tttdeathnoteuseage = 0
 					if killP:Alive() then
-						killP:Kill()
-						ply:StripWeapon("death_note_ttt")
-						killP:PrintMessage(HUD_PRINTTALK,"DeathNote: died via the Death-Note killed by '"..ply:Nick().."'")
-						for k,v in pairs(player.GetAll()) do
-							v:PrintMessage(HUD_PRINTTALK,"DeathNote: "..killP:Nick().." Has died via the DeathNote.")
+						if TheDeathType == "heartattack" then
+							killP:Kill()
+							killP:PrintMessage(HUD_PRINTTALK,"DeathNote: Died via the Death-Note killed by '"..ply:Nick().."'")
+							for k,v in pairs(player.GetAll()) do
+								v:PrintMessage(HUD_PRINTTALK,"DeathNote: "..killP:Nick()..", Has died via the DeathNote.")
+							end
 						end
+						if TheDeathType == "burn" then
+							if killP:Health() >= 100 then
+								killP:SetHealth(100)
+							end
+							killP:Ignite( 5000000 )
+							killP:PrintMessage(HUD_PRINTTALK,"DeathNote: Burned via the Death-Note.")
+							for k,v in pairs(player.GetAll()) do
+								v:PrintMessage(HUD_PRINTTALK,"DeathNote: "..killP:Nick()..", Burned via the Death-Note.")
+							end
+						end
+						ply:StripWeapon("death_note_ttt")
 					else
 						ply:PrintMessage(HUD_PRINTTALK,"DeathNote: That Person Is Already Dead, You did not lose the Death-Note")
 					end

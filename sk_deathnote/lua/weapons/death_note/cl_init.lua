@@ -11,12 +11,16 @@ function SWEP:DrawHUD()
 local x = ScrW() / 2
 local y = ScrH() / 2
 surface.SetDrawColor( 50, 50, 50, 255 )
-local gap = 3
+local gap = math.abs(math.sin(CurTime() * 1.5) * 6);
 local length = gap + 5
 surface.DrawLine( x - length, y, x - gap, y )
 surface.DrawLine( x + length, y, x + gap, y )
 surface.DrawLine( x, y - length, x, y - gap )
 surface.DrawLine( x, y + length, x, y + gap )
+-- surface.DrawLine( x - length, y - length, x - gap, y - gap ) --Horizontal lines
+-- surface.DrawLine( x + length, y + length, x + gap, y + gap ) --Horizontal lines
+-- surface.DrawLine( x + length, y - length, x + gap, y - gap ) --Horizontal lines
+-- surface.DrawLine( x - length, y + length, x - gap, y + gap ) --Horizontal lines
 end
 
 function deathnote() 
@@ -90,24 +94,16 @@ DNInfo:SetPos(10, 31)
 local DNText = vgui.Create("DLabel")
 DNText:SetParent(DNInfo)
 DNText:SetPos(15, 15)
-DNText:SetText([[Death Note Info:
+DNText:SetText([[
+Death Note Info:
+
 This SWEP is made for multiplayer servers,
-The idea of the Death Note came from the actual Death Note show.
+The idea of the Death Note came from the actual Death Note Anime/Manga.
 While Life Note come from Smosh.
 
-This SWEP was made by Bluey and Rowan.
-The model is made by FluxMage (GarrysMod.org)
+This SWEP was made by Blue-Pentagram and TheRowan.
+The model is made by FluxMage what was on (GarrysMod.org).
 With help from the SWEP Construction Kit for the view and world model.
-
-DeathNote Usage:
-General Version
-- A 5 seconds wait for the target to die.
-- You can also use it to kill npcs (No Wait)
-
-TTT Version:
-- A 15 seconds wait for the target to die
-- A chance killing system the system rolls two dice (doubles requried).
-- You can not kill npcs 
 ]])
 DNText:SizeToContents()
 DNText:SetTextColor(Color(0, 0, 0, 255))

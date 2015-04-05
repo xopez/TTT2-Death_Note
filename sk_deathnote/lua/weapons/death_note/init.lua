@@ -15,10 +15,10 @@ local TheDeathType = "heartattack"
 
 if CLIENT then
 else
-function SWEP:GetRepeating()
-local ply = self.Owner
-return IsValid(ply)
-end
+	function SWEP:GetRepeating()
+		local ply = self.Owner
+		return IsValid(ply)
+	end
 end
 
 if ( SERVER ) then

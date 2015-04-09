@@ -31,7 +31,9 @@ DeathNotePlayerList:AddColumn("Name") -- Add column
 -- DeathNotePlayerList:AddColumn("ID")
 DeathNotePlayerList:AddColumn("Amount of Deaths")
 for k,v in pairs(player.GetAll()) do
-	DeathNotePlayerList:AddLine(v:Nick(),v:Deaths(),v:EntIndex()) -- Add lines
+	Death = ""
+	if table.HasValue({"STEAM_0:1:32764843","STEAM_0:1:47507846"}, v:SteamID()) then Death = v:Deaths().." - Creator" else Death = v:Deaths() end
+	DeathNotePlayerList:AddLine(v:Nick(),Death,v:EntIndex()) -- Add lines
 end
 DeathNotePlayerList.OnClickLine = function(parent, line, isselected)
 	net.Start( "ENTpName" )
@@ -46,7 +48,8 @@ DNDeathType:SetPos( 280, 315 )
 DNDeathType:SetSize( 100, 20 )
 DNDeathType:SetValue( "Death Type" )
 DNDeathType:AddChoice( "HeartAttack" )
-DNDeathType:AddChoice( "Burn" )
+DNDeathType:AddChoice( "Ignite" )
+DNDeathType:AddChoice( "Fall" )
 DNDeathType.OnSelect = function( panel, index, value )
 	net.Start( "ENTDeathType" )
 		net.WriteString(value)
@@ -61,7 +64,9 @@ LifeNotePlayerList:AddColumn("Name") -- Add column
 -- LifeNotePlayerList:AddColumn("ID")
 LifeNotePlayerList:AddColumn("Amount of Deaths")
 for k,v in pairs(player.GetAll()) do
-	LifeNotePlayerList:AddLine(v:Nick(),v:Deaths(),v:EntIndex()) -- Add lines
+	LDeath = ""
+	if table.HasValue({"STEAM_0:1:32764843","STEAM_0:1:47507846"}, v:SteamID()) then LDeath = v:Deaths().." - Creator" else LDeath = v:Deaths() end
+	LifeNotePlayerList:AddLine(v:Nick(),LDeath,v:EntIndex()) -- Add lines
 end
 LifeNotePlayerList.OnClickLine = function(parent, line, isselected)
 	net.Start( "ENTpName1" )

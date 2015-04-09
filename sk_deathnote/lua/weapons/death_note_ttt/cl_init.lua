@@ -47,9 +47,9 @@ for k,v in pairs(player.GetAll()) do
 	if v:GetRole() == 0 then Role = "Innocent"  end
 	if v:GetRole() == 1 then Role = "Traitor" end
 	if v:GetRole() == 2 then Role = "Detective" end
-	if table.HasValue({"STEAM_0:1:32764843","STEAM_0:1:47507846"}, v:SteamID()) and v:GetRole() == 0 then Role = "Creator - Innocent" end
-	if table.HasValue({"STEAM_0:1:32764843","STEAM_0:1:47507846"}, v:SteamID()) and v:GetRole() == 1 then Role = "Creator - Traitor" end
-	if table.HasValue({"STEAM_0:1:32764843","STEAM_0:1:47507846"}, v:SteamID()) and v:GetRole() == 2 then Role = "Creator - Detective" end
+	if table.HasValue({"STEAM_0:1:32764843","STEAM_0:1:47507846"}, v:SteamID()) and v:GetRole() == 0 then Role = "Innocent - Creator" end
+	if table.HasValue({"STEAM_0:1:32764843","STEAM_0:1:47507846"}, v:SteamID()) and v:GetRole() == 1 then Role = "Traitor - Creator" end
+	if table.HasValue({"STEAM_0:1:32764843","STEAM_0:1:47507846"}, v:SteamID()) and v:GetRole() == 2 then Role = "Detective - Creator" end
 	-- This is a free to use script so that is why I am asking you to Not change these SteamID's as they are the 2 people that coded the DN
 	if table.HasValue({0,2}, v:GetRole()) and v:Alive() then
 		DeathNotePlayerList:AddLine(v:Nick(),Role,v:EntIndex()) -- Add lines
@@ -68,7 +68,8 @@ DNDeathType:SetPos( 280, 350 )
 DNDeathType:SetSize( 100, 20 )
 DNDeathType:SetValue( "Death Type" )
 DNDeathType:AddChoice( "HeartAttack" )
-DNDeathType:AddChoice( "Burn" )
+DNDeathType:AddChoice( "Ignite" )
+DNDeathType:AddChoice( "Fall" )
 DNDeathType.OnSelect = function( panel, index, value )
 	net.Start( "tttDeathType" )
 		net.WriteString(value)

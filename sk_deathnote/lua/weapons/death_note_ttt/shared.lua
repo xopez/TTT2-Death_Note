@@ -506,10 +506,12 @@ end
 SWEP.HoldType = "slam"
 SWEP.ViewModelFOV = 70
 SWEP.ViewModelFlip = false
-SWEP.ViewModel = "models/weapons/v_slam.mdl"
+SWEP.ViewModel = "models/weapons/c_slam.mdl"
 SWEP.WorldModel = "models/weapons/w_slam.mdl"
 SWEP.ShowViewModel = true
 SWEP.ShowWorldModel = false
+SWEP.UseHands = true
+
 SWEP.ViewModelBoneMods = {
 	["Detonator"] = { scale = Vector(0.009, 0.009, 0.009), pos = Vector(0, 0, 0), angle = Angle(0, 0, 0) },
 	["Slam_base"] = { scale = Vector(0.009, 0.009, 0.009), pos = Vector(0, 0, 0), angle = Angle(0, 0, 0) }

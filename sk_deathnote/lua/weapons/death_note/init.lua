@@ -41,11 +41,18 @@ util.AddNetworkString( "DeathType" )
 					if TheDeathType == "heartattack" then
 						killP:Kill()
 					end
-					if TheDeathType == "burn" then
+					if TheDeathType == "ignite" then
 						if killP:Health() >= 100 then
 							killP:SetHealth(100)
 						end
 						killP:Ignite( 5000000 )
+					end
+					if TheDeathType == "fall" then
+						if killP:Health() >= 100 then
+							killP:SetHealth(100)
+						end
+					killP:SetVelocity(Vector(0,0,1000))
+					timer.Simple( 1, function() killP:SetVelocity(Vector(0,0,-1000)) end )
 					end
 					deathnoteuseage = 0
 					for k,v in pairs( player.GetAll() ) do

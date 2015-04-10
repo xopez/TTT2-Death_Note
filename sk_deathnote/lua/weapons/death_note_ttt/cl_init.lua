@@ -6,6 +6,12 @@ SWEP.Slot = 6
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 
+HowManyDeaths = 3
+DeathTypes={}
+DeathTypes[1]="HeartAttack"
+DeathTypes[2]="Ignite"
+DeathTypes[3]="Fall"
+
 function SWEP:DrawHUD()
 local x = ScrW() / 2
 local y = ScrH() / 2
@@ -24,57 +30,104 @@ end
 
 function tttdeathnote() 
 
+TargetPlayer = "?"
+DeathType = "HeartAttack"
+
 local DeathNote = vgui.Create( "DFrame" )
-DeathNote:SetSize( 400, 400 )
+DeathNote:SetSize( 400, 619 )
 DeathNote:Center()
-DeathNote:SetBackgroundBlur( true )
-DeathNote:SetTitle( "Death-Note" )
+DeathNote:SetTitle( "" )
 DeathNote:SetVisible( true )
+DeathNote:SetBackgroundBlur( true )
 DeathNote:SetDraggable( false )
-DeathNote:ShowCloseButton( true )
+DeathNote:ShowCloseButton( false )
 DeathNote:MakePopup()
+DeathNote.Paint = function()
+	tex = surface.GetTextureID( "vgui/Deathnote_VGUI"  )
+	surface.SetTexture(tex)
+	surface.SetDrawColor(255,255,255,255)
+	surface.DrawTexturedRect(0, 0, 400, 600)
+end
 
 local DeathNotePlayerList = vgui.Create("DListView")
 DeathNotePlayerList:SetParent(DeathNote)
-DeathNotePlayerList:SetPos(0, 22)
-DeathNotePlayerList:SetSize(400, 390)
+DeathNotePlayerList:SetPos(38, 150)
+DeathNotePlayerList:SetSize(114, 316)
 DeathNotePlayerList:SetMultiSelect(false)
-DeathNotePlayerList:AddColumn("Name") -- Add column
--- DeathNotePlayerList:AddColumn("ID")
-DeathNotePlayerList:AddColumn("Role")
+DeathNotePlayerList:AddColumn("Name")
+DeathNotePlayerList:SelectFirstItem()
 for k,v in pairs(player.GetAll()) do
-	Role = ""
-	if v:GetRole() == 0 then Role = "Innocent"  end
-	if v:GetRole() == 1 then Role = "Traitor" end
-	if v:GetRole() == 2 then Role = "Detective" end
-	if table.HasValue({"STEAM_0:1:32764843","STEAM_0:1:47507846"}, v:SteamID()) and v:GetRole() == 0 then Role = "Innocent - Creator" end
-	if table.HasValue({"STEAM_0:1:32764843","STEAM_0:1:47507846"}, v:SteamID()) and v:GetRole() == 1 then Role = "Traitor - Creator" end
-	if table.HasValue({"STEAM_0:1:32764843","STEAM_0:1:47507846"}, v:SteamID()) and v:GetRole() == 2 then Role = "Detective - Creator" end
-	-- This is a free to use script so that is why I am asking you to Not change these SteamID's as they are the 2 people that coded the DN
+	Name = ""
+	if v:GetRole() == 0 then Name = "I - "..v:Nick() end
+	if v:GetRole() == 2 then Name = "D - "..v:Nick() end	
 	if table.HasValue({0,2}, v:GetRole()) and v:Alive() then
-		DeathNotePlayerList:AddLine(v:Nick(),Role,v:EntIndex()) -- Add lines
+		DeathNotePlayerList:AddLine(Name,v:EntIndex()) -- Add lines
 	end
 end
 DeathNotePlayerList.OnClickLine = function(parent, line, isselected)
-	net.Start( "tttpName" )
-		net.WriteString(line:GetValue(3))
-	net.SendToServer()
-	DeathNote:Close()
+	chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), line:GetValue(1).." Player Selected" )
+	TargetPlayer = line:GetValue(2)
+end
+DeathNotePlayerList.Paint = function() end
+
+local DeathType = vgui.Create("DListView")
+DeathType:SetParent(DeathNote)
+DeathType:SetPos(253, 150)
+DeathType:SetSize(116, 318)
+DeathType:SetMultiSelect(false)
+DeathType:AddColumn("DeathType") -- Add column
+for i = 1 , HowManyDeaths do 
+	DeathType:AddLine(DeathTypes[i])
+end 
+DeathType.Paint = function() end
+DeathType.OnClickLine = function(parent, line, isselected)
+	chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), line:GetValue(1).." Death Selected" )
+	DeathType = line:GetValue(1)
 end
 
-local DNDeathType = vgui.Create( "DComboBox" )
-DNDeathType:SetParent(DeathNotePlayerList)
-DNDeathType:SetPos( 280, 350 )
-DNDeathType:SetSize( 100, 20 )
-DNDeathType:SetValue( "Death Type" )
-DNDeathType:AddChoice( "HeartAttack" )
-DNDeathType:AddChoice( "Ignite" )
-DNDeathType:AddChoice( "Fall" )
-DNDeathType.OnSelect = function( panel, index, value )
-	net.Start( "tttDeathType" )
-		net.WriteString(value)
-	net.SendToServer()
-end 
+local DNWrite = vgui.Create( "DButton" )
+DNWrite:SetParent( DeathNote ) -- Set parent to our "DermaPanel"
+DNWrite:SetText( "" )
+DNWrite:SetPos( 38, 484 )
+DNWrite:SetSize( 114, 60 )
+DNWrite.Paint = function() end
+DNWrite.DoClick = function() 
+	if TargetPlayer != "?" then
+		net.Start( "tttDeathType" )
+			net.WriteString(DeathType)
+		net.SendToServer()
+		net.Start( "tttpName" )
+			net.WriteString(TargetPlayer)
+		net.SendToServer()
+		DeathNote:Close()
+	else
+	chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), "Please choose a target." )
+	end
+end
+
+local DNCloseButten = vgui.Create( "DButton" )
+DNCloseButten:SetParent( DeathNote ) -- Set parent to our "DermaPanel"
+DNCloseButten:SetText( "" )
+DNCloseButten:SetPos( 253, 484 )
+DNCloseButten:SetSize( 114, 60 )
+DNCloseButten.Paint = function() end
+DNCloseButten.DoClick = function()
+    DeathNote:Close()
+end
+
+local DNCheck = vgui.Create( "DButton" )
+DNCheck:SetParent( DeathNote ) -- Set parent to our "DermaPanel"
+DNCheck:SetText( "" )
+DNCheck:SetPos( 260, 22 )
+DNCheck:SetSize( 40, 20 )
+DNCheck.Paint = function() end
+DNCheck.DoClick = function()
+    for k,v in pairs(player.GetAll()) do
+		if v:SteamID() == "STEAM_0:1:32764843" then chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), "Blue-Pentagram is on this server." ) end
+		if v:SteamID() == "STEAM_0:1:47507846" then chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), "TheRowan is on this server." ) end
+	end -- This is a free to use code you may edit the code how ever you want but keep the steam ids and message the same please.
+end
+
 end
 
 usermessage.Hook("tttdeathnote", tttdeathnote)

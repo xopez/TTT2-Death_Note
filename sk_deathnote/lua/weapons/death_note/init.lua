@@ -23,7 +23,6 @@ end
 
 if ( SERVER ) then
 util.AddNetworkString( "pName" )
-util.AddNetworkString( "pName1" )
 util.AddNetworkString( "DeathType" )
 
 	net.Receive( "DeathType", function( len, ply )
@@ -32,54 +31,27 @@ util.AddNetworkString( "DeathType" )
 
 	net.Receive( "pName", function( len, ply )
 		local plyName = tonumber(net.ReadString())
-		local killP = player.GetByID(plyName)
+		local TarPly = player.GetByID(plyName)
 		if deathnoteuseage == 0 then
-		if killP:Alive() then
+		if TarPly:Alive() then
 			deathnoteuseage = 1
 			timer.Simple( 5, function()
-				if killP:Alive() then
+				if TarPly:Alive() then
 					if TheDeathType == "heartattack" then
-						killP:Kill()
+						DN_HeartAttack(ply,TarPly)
 					end
 					if TheDeathType == "ignite" then
-						if killP:Health() >= 100 then
-							killP:SetHealth(100)
-						end
-						killP:Ignite( 5000000 )
+						DN_Ignite(ply,TarPly)
 					end
 					if TheDeathType == "fall" then
-						if killP:Health() >= 100 then
-							killP:SetHealth(100)
-						end
-					killP:SetVelocity(Vector(0,0,1000))
-					timer.Simple( 1, function() killP:SetVelocity(Vector(0,0,-1000)) end )
+						DN_Fall(ply,TarPly)
 					end
 					deathnoteuseage = 0
-					for k,v in pairs( player.GetAll() ) do
-						if ulx_installed then
-							if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-								v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..killP:Nick()..". ("..TheDeathType..")")
-							end
-						else
-							if v:IsAdmin() then
-								v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..killP:Nick()..". ("..TheDeathType..")")
-							end
-						end
-					end
+					AdminMessege(ply,TarPly,TheDeathType)
 				else
-					ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Dead")
+					ply:PrintMessage(HUD_PRINTTALK,"DeathNote: That Person Is Already Dead")
 					deathnoteuseage = 0
-					for k,v in pairs( player.GetAll() ) do
-						if ulx_installed then
-							if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-								v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the deathnote on "..killP:Nick().." but failed")
-							end
-						else
-							if v:IsAdmin() then
-								v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the deathnote on "..killP:Nick().." but failed")
-							end
-						end
-					end
+					FailAdminMessege(ply,TarPly)
 				end
 			end)
 		else
@@ -89,38 +61,6 @@ util.AddNetworkString( "DeathType" )
 			ply:PrintMessage(HUD_PRINTTALK,"The deathnote is in cooldown.")
 		end
 	end )
-	
-	net.Receive( "pName1", function( len, ply )
-		local plyName = tonumber(net.ReadString())
-		local killP = player.GetByID(plyName)
-		if killP:Alive() then
-			ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Alive")
-			for k,v in pairs(player.GetAll()) do
-				if ulx_installed then
-					if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-						v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the lifenote on "..killP:Nick().." but failed")
-					end
-				else
-					if v:IsAdmin() then
-						v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the lifenote on "..killP:Nick().." but failed")
-					end
-				end
-			end
-		else
-			killP:Spawn()
-			for k,v in pairs(player.GetAll()) do
-				if ulx_installed then
-					if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-						v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the lifenote on "..killP:Nick())
-					end
-				else
-					if v:IsAdmin() then
-						v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the lifenote on "..killP:Nick())
-					end
-				end
-			end
-		end
-	end )	
 end
 
 function SWEP:Reload()
@@ -156,11 +96,11 @@ function SWEP:PrimaryAttack()
 						for k,v in pairs(player.GetAll()) do
 							if ulx_installed then
 								if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..killP:Nick())
+									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..TarPly:Nick())
 								end
 							else
 								if v:IsAdmin() then
-									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..killP:Nick())
+									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..TarPly:Nick())
 								end
 							end
 						end
@@ -170,11 +110,11 @@ function SWEP:PrimaryAttack()
 						for k,v in pairs(player.GetAll()) do
 							if ulx_installed then
 								if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the deathnote on "..killP:Nick().." but failed")
+									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the deathnote on "..TarPly:Nick().." but failed")
 								end
 							else
 								if v:IsAdmin() then
-									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the deathnote on "..killP:Nick().." but failed")
+									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the deathnote on "..TarPly:Nick().." but failed")
 								end
 							end
 						end
@@ -198,3 +138,55 @@ function SWEP:SecondaryAttack()
 	end
 end
 
+function AdminMessege(ply,TarPly,TheDeathType)
+	for k,v in pairs( player.GetAll() ) do
+		if ulx_installed then
+			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick().." has used the deathnote on "..TarPly:Nick()..". ("..TheDeathType..")")
+			end
+		else
+			if v:IsAdmin() then
+				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick().." has used the deathnote on "..TarPly:Nick()..". ("..TheDeathType..")")
+			end
+		end
+	end
+end
+
+function FailAdminMessege(ply,TarPly)
+	for k,v in pairs( player.GetAll() ) do
+		if ulx_installed then
+			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick().." tried the deathnote on "..TarPly:Nick().." but failed")
+			end
+		else
+			if v:IsAdmin() then
+				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick().." tried the deathnote on "..TarPly:Nick().." but failed")
+			end
+		end
+	end
+end
+
+/*----------------------
+--Multiple Death Types--
+----------------------*/
+-- Heart Attack --
+function DN_HeartAttack(ply,TarPly)
+	TarPly:Kill()
+	TarPly:PrintMessage(HUD_PRINTTALK,"DeathNote: Died via the Death-Note killed by '"..ply:Nick().."'")
+end
+-- Ignite --
+function DN_Ignite(ply,TarPly)
+	if TarPly:Health() >= 100 then
+		TarPly:SetHealth(100)
+	end
+	TarPly:Ignite( 5000000 )
+	TarPly:PrintMessage(HUD_PRINTTALK,"DeathNote: Ignited via the Death-Note.")
+end
+-- Fall Death --
+function DN_Fall(ply,TarPly)
+	if TarPly:Health() >= 100 then
+		TarPly:SetHealth(100)
+	end
+	TarPly:SetVelocity(Vector(0,0,1000))
+	timer.Simple( 1, function() TarPly:SetVelocity(Vector(0,0,-1000)) end )
+end

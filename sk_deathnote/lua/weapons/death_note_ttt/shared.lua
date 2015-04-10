@@ -77,7 +77,7 @@ function SWEP:OnRemove()
 end
 
 if CLIENT then
-	SWEP.Icon = "VGUI/entities/death_note"
+	SWEP.Icon = "VGUI/icon/TTT_DeathNote_Shop"
 	SWEP.EquipMenuData = {
       type = "Weapon",
       desc = "To Help you kill the Innocents and Detectives."

@@ -7,10 +7,16 @@ SWEP.SlotPos = 20
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 
+HowManyDeaths = 3
+DeathTypes={}
+DeathTypes[1]="HeartAttack"
+DeathTypes[2]="Ignite"
+DeathTypes[3]="Fall"
+
 function SWEP:DrawHUD()
 local x = ScrW() / 2
 local y = ScrH() / 2
-surface.SetDrawColor( 255, 50, 50, 255 )
+surface.SetDrawColor( 50, 50, 50, 255 )
 local gap = math.abs(math.sin(CurTime() * 1.5) * 6);
 local length = gap + 5
 surface.DrawLine( x - length, y, x - gap, y )
@@ -25,115 +31,111 @@ end
 
 function deathnote() 
 
+TargetPlayer = "?"
+DeathType = "HeartAttack"
+
 local DeathNote = vgui.Create( "DFrame" )
-DeathNote:SetSize( 400, 400 )
+DeathNote:SetSize( 400, 619 )
 DeathNote:Center()
-DeathNote:SetBackgroundBlur( true )
-DeathNote:SetTitle( "Death-Note" )
+DeathNote:SetTitle( "" )
 DeathNote:SetVisible( true )
+DeathNote:SetBackgroundBlur( true )
 DeathNote:SetDraggable( false )
-DeathNote:ShowCloseButton( true )
+DeathNote:ShowCloseButton( false )
 DeathNote:MakePopup()
 
-local DeathnoteSheet = vgui.Create( "DPropertySheet" )
-DeathnoteSheet:SetParent( DeathNote )
-DeathnoteSheet:SetPos( 0, 22 )
-DeathnoteSheet:SetSize( 400, 378 )
-  
+DeathNote.Paint = function()
+	tex = surface.GetTextureID( "vgui/Deathnote_VGUI"  )
+	surface.SetTexture(tex)
+	surface.SetDrawColor(255,255,255,255)
+	surface.DrawTexturedRect(0, 0, 400, 600)
+end
+
 local DeathNotePlayerList = vgui.Create("DListView")
-DeathNotePlayerList:SetPos(0, 22)
-DeathNotePlayerList:SetSize(300, 300)
+DeathNotePlayerList:SetParent(DeathNote)
+DeathNotePlayerList:SetPos(38, 150)
+DeathNotePlayerList:SetSize(114, 316)
 DeathNotePlayerList:SetMultiSelect(false)
-DeathNotePlayerList:AddColumn("Name") -- Add column
--- DeathNotePlayerList:AddColumn("ID")
-DeathNotePlayerList:AddColumn("Amount of Deaths")
+DeathNotePlayerList:AddColumn("Name")
+DeathNotePlayerList:SelectFirstItem()
 for k,v in pairs(player.GetAll()) do
-	Death = ""
-	if table.HasValue({"STEAM_0:1:32764843","STEAM_0:1:47507846"}, v:SteamID()) then Death = v:Deaths().." - Creator" else Death = v:Deaths() end
-	DeathNotePlayerList:AddLine(v:Nick(),Death,v:EntIndex()) -- Add lines
+	DeathNotePlayerList:AddLine(v:Name(),v:EntIndex()) -- Add lines
 end
 DeathNotePlayerList.OnClickLine = function(parent, line, isselected)
-	net.Start( "pName" )
-		net.WriteString(line:GetValue(3))
-	net.SendToServer()
-	DeathNote:Close()
+	chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), line:GetValue(1).." Player Selected" )
+	TargetPlayer = line:GetValue(2)
 end
- 
-local DNDeathType = vgui.Create( "DComboBox" )
-DNDeathType:SetParent(DeathNotePlayerList)
-DNDeathType:SetPos( 280, 315 )
-DNDeathType:SetSize( 100, 20 )
-DNDeathType:SetValue( "Death Type" )
-DNDeathType:AddChoice( "HeartAttack" )
-DNDeathType:AddChoice( "Ignite" )
-DNDeathType:AddChoice( "Fall" )
-DNDeathType.OnSelect = function( panel, index, value )
-	net.Start( "DeathType" )
-		net.WriteString(value)
-	net.SendToServer()
+DeathNotePlayerList.Paint = function() end
+
+local DeathType = vgui.Create("DListView")
+DeathType:SetParent(DeathNote)
+DeathType:SetPos(253, 150)
+DeathType:SetSize(116, 318)
+DeathType:SetMultiSelect(false)
+DeathType:AddColumn("DeathType") -- Add column
+for i = 1 , HowManyDeaths do 
+	DeathType:AddLine(DeathTypes[i])
 end 
-
-local LifeNotePlayerList = vgui.Create("DListView")
-LifeNotePlayerList:SetPos(0, 22)
-LifeNotePlayerList:SetSize(300, 300)
-LifeNotePlayerList:SetMultiSelect(false)
-LifeNotePlayerList:AddColumn("Name") -- Add column
--- LifeNotePlayerList:AddColumn("ID")
-LifeNotePlayerList:AddColumn("Amount of Deaths")
-for k,v in pairs(player.GetAll()) do
-	LDeath = ""
-	if table.HasValue({"STEAM_0:1:32764843","STEAM_0:1:47507846"}, v:SteamID()) then LDeath = v:Deaths().." - Creator" else LDeath = v:Deaths() end
-	LifeNotePlayerList:AddLine(v:Nick(),LDeath,v:EntIndex()) -- Add lines
+DeathType.Paint = function()
 end
-LifeNotePlayerList.OnClickLine = function(parent, line, isselected)
-	net.Start( "pName1" )
-		net.WriteString(line:GetValue(3))
-	net.SendToServer()
-	DeathNote:Close()
-end
-  
-local DNInfo = vgui.Create("DPanel")
-DNInfo:SetSize(300, 300)
-DNInfo:SetPos(10, 31)
-
-local DNText = vgui.Create("DLabel")
-DNText:SetParent(DNInfo)
-DNText:SetPos(15, 15)
-DNText:SetText([[
-Death Note Info:
-
-This SWEP is made for multiplayer servers,
-The idea of the Death Note came from the actual Death Note Anime/Manga.
-While Life Note come from Smosh.
-
-This SWEP was made by Blue-Pentagram and TheRowan.
-The model is made by FluxMage what was on (GarrysMod.org).
-With help from the SWEP Construction Kit for the view and world model.
-]])
-DNText:SizeToContents()
-DNText:SetTextColor(Color(0, 0, 0, 255))
-
-local Workshop = vgui.Create( "DButton" )
-Workshop:SetParent(DNInfo)
-Workshop:SetSize( 90, 30 )
-Workshop:SetPos( 5, 306 )
-Workshop:SetText( "Workshop Item" )
-Workshop.DoClick = function( button )
-	gui.OpenURL("http://steamcommunity.com/sharedfiles/filedetails/?id=278185787&searchtext=")
+DeathType.OnClickLine = function(parent, line, isselected)
+	chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), line:GetValue(1).." Death Selected" )
+	DeathType = line:GetValue(1)
 end
 
-local SWEPConstructionKit = vgui.Create( "DButton" )
-SWEPConstructionKit:SetParent(DNInfo)
-SWEPConstructionKit:SetSize( 120, 30 )
-SWEPConstructionKit:SetPos( 100, 306 )
-SWEPConstructionKit:SetText( "SWEP Construction Kit" )
-SWEPConstructionKit.DoClick = function( button )
-	gui.OpenURL("http://steamcommunity.com/sharedfiles/filedetails/?id=109724869&requirelogin=true")
+local DNWrite = vgui.Create( "DButton" )
+DNWrite:SetParent( DeathNote ) -- Set parent to our "DermaPanel"
+DNWrite:SetText( "" )
+DNWrite:SetPos( 38, 484 )
+DNWrite:SetSize( 114, 60 )
+DNWrite.Paint = function() end
+DNWrite.DoClick = function()
+	if TargetPlayer != "?" then
+		net.Start( "DeathType" )
+			net.WriteString(DeathType)
+		net.SendToServer()
+		net.Start( "pName" )
+			net.WriteString(TargetPlayer)
+		net.SendToServer()
+		DeathNote:Close()
+	else
+	chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), "Please choose a target." )
+	end
 end
- 
-DeathnoteSheet:AddSheet( "DeathNote", DeathNotePlayerList, "materials/VGUI/icon/skull.png", false, false, "The notes of Death" )
-DeathnoteSheet:AddSheet( "LifeNote", LifeNotePlayerList, "materials/VGUI/icon/heart.png", false, false, "The notes of Alive" )
-DeathnoteSheet:AddSheet( "DeathNote Info", DNInfo, "materials/VGUI/icon/info.png", false, false, "" ) 
+
+local DNCloseButten = vgui.Create( "DButton" )
+DNCloseButten:SetParent( DeathNote ) -- Set parent to our "DermaPanel"
+DNCloseButten:SetText( "" )
+DNCloseButten:SetPos( 253, 484 )
+DNCloseButten:SetSize( 114, 60 )
+DNCloseButten.Paint = function() end
+DNCloseButten.DoClick = function()
+    DeathNote:Close()
+end
+
+local DNCloseButten = vgui.Create( "DButton" )
+DNCloseButten:SetParent( DeathNote ) -- Set parent to our "DermaPanel"
+DNCloseButten:SetText( "" )
+DNCloseButten:SetPos( 253, 484 )
+DNCloseButten:SetSize( 114, 60 )
+DNCloseButten.Paint = function() end
+DNCloseButten.DoClick = function()
+    DeathNote:Close()
+end
+
+local DNCheck = vgui.Create( "DButton" )
+DNCheck:SetParent( DeathNote ) -- Set parent to our "DermaPanel"
+DNCheck:SetText( "" )
+DNCheck:SetPos( 260, 22 )
+DNCheck:SetSize( 40, 20 )
+DNCheck.Paint = function() end
+DNCheck.DoClick = function()
+    for k,v in pairs(player.GetAll()) do
+		if v:SteamID() == "STEAM_0:1:32764843" then chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), "Blue-Pentagram is on this server." ) end
+		if v:SteamID() == "STEAM_0:1:47507846" then chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), "TheRowan is on this server." ) end
+	end -- This is a free to use code you may edit the code how ever you want but keep the steam ids and message the same please.
+end
+
 end
 
 usermessage.Hook("deathnote", deathnote)

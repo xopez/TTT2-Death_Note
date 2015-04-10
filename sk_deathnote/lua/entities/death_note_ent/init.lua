@@ -5,7 +5,7 @@ AddCSLuaFile( "../../deathnote_config.lua" )
 
 include('shared.lua')
 include( '../../deathnote_config.lua' )
-local entdeathnoteuseage = 0
+local entdeathnoteuseage = false
 local TheDeathType = "heartattack"
 
 function ENT:Initialize()
@@ -39,7 +39,6 @@ end
 
 if ( SERVER ) then
 util.AddNetworkString( "ENTpName" )
-util.AddNetworkString( "ENTpName2" )
 util.AddNetworkString( "DN_CloseMenu" )
 util.AddNetworkString( "ENTDeathType" )
 
@@ -55,53 +54,26 @@ util.AddNetworkString( "ENTDeathType" )
 		ply.MenuOpen = false
 		local plyName = tonumber(net.ReadString())
 		local killP = player.GetByID(plyName)
-		if entdeathnoteuseage == 0 then
+		if !entdeathnoteuseage then
 		if killP:Alive() then
-			entdeathnoteuseage = 1
+			entdeathnoteuseage = true
 			timer.Simple( 5, function()
 				if killP:Alive() then
 					if TheDeathType == "heartattack" then
-						killP:Kill()
+						DN_HeartAttack(ply,TarPly)
 					end
 					if TheDeathType == "ignite" then
-						if killP:Health() >= 100 then
-							killP:SetHealth(100)
-						end
-						killP:Ignite( 5000000 )
+						DN_Ignite(ply,TarPly)
 					end
 					if TheDeathType == "fall" then
-						if killP:Health() >= 100 then
-							killP:SetHealth(100)
-						end
-					killP:SetVelocity(Vector(0,0,1000))
-					timer.Simple( 1, function() killP:SetVelocity(Vector(0,0,-1000)) end )
+						DN_Fall(ply,TarPly)
 					end
-					entdeathnoteuseage = 0
-					for k,v in pairs( player.GetAll() ) do
-						if ulx_installed then
-							if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-								v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." has used the deathnote on "..killP:Nick()..". ("..TheDeathType..")")
-							end
-						else
-							if v:IsAdmin() then
-								v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." has used the deathnote on "..killP:Nick()..". ("..TheDeathType..")")
-							end
-						end
-					end
+					entdeathnoteuseage = false
+					AdminMessege(ply,TarPly,TheDeathType)
 				else
 					ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Dead")
-					entdeathnoteuseage = 0
-					for k,v in pairs( player.GetAll() ) do
-						if ulx_installed then
-							if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-								v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." tried the deathnote on "..killP:Nick().." but failed")
-							end
-						else
-							if v:IsAdmin() then
-								v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." tried the deathnote on "..killP:Nick().." but failed")
-							end
-						end
-					end
+					entdeathnoteuseage = false
+					FailAdminMessege(ply,TarPly)
 				end
 			end)
 		else
@@ -110,40 +82,61 @@ util.AddNetworkString( "ENTDeathType" )
 		else
 			ply:PrintMessage(HUD_PRINTTALK,"The deathnote is in cooldown.")
 		end
-end )
-	
-	net.Receive( "ENTpName1", function( len, ply )
-		ply.MenuOpen = false
-		local plyName = tonumber(net.ReadString())
-		local killP = player.GetByID(plyName)
-		if killP:Alive() then
-			ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Alive")
-			if ulx_installed then
-				if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-					v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." tried the lifenote on "..killP:Nick().." but failed")
-				end
-			else
-				if v:IsAdmin() then
-					v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." tried the lifenote on "..killP:Nick().." but failed")
-				end
-			end
-		else
-			killP:Spawn()
-			for k,v in pairs( player.GetAll() ) do
-				if ulx_installed then
-					if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-						v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." has used the lifenote on "..killP:Nick())
-					end
-				else
-					if v:IsAdmin() then
-						v:PrintMessage(HUD_PRINTTALK,"DeathNote ENT: "..ply:Nick().." has used the lifenote on "..killP:Nick())
-					end
-				end
-			end
-		end
-	end )	
+	end )
 end
 
 function ENT:Think()
 end
- 
+
+function AdminMessege(ply,TarPly,TheDeathType)
+	for k,v in pairs( player.GetAll() ) do
+		if ulx_installed then
+			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+				v:PrintMessage(HUD_PRINTTALK,"Deathnote Ent: "..ply:Nick().." has used the deathnote on "..TarPly:Nick()..". ("..TheDeathType..")")
+			end
+		else
+			if v:IsAdmin() then
+				v:PrintMessage(HUD_PRINTTALK,"Deathnote Ent: "..ply:Nick().." has used the deathnote on "..TarPly:Nick()..". ("..TheDeathType..")")
+			end
+		end
+	end
+end
+
+function FailAdminMessege(ply,TarPly)
+	for k,v in pairs( player.GetAll() ) do
+		if ulx_installed then
+			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+				v:PrintMessage(HUD_PRINTTALK,"Deathnote Ent: "..ply:Nick().." tried the deathnote on "..TarPly:Nick().." but failed")
+			end
+		else
+			if v:IsAdmin() then
+				v:PrintMessage(HUD_PRINTTALK,"Deathnote Ent: "..ply:Nick().." tried the deathnote on "..TarPly:Nick().." but failed")
+			end
+		end
+	end
+end
+
+/*----------------------
+--Multiple Death Types--
+----------------------*/
+-- Heart Attack --
+function DN_HeartAttack(ply,TarPly)
+	TarPly:Kill()
+	TarPly:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: Died via the Death-Note killed by '"..ply:Nick().."'")
+end
+-- Ignite --
+function DN_Ignite(ply,TarPly)
+	if TarPly:Health() >= 100 then
+		TarPly:SetHealth(100)
+	end
+	TarPly:Ignite( 5000000 )
+	TarPly:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: Ignited via the Death-Note.")
+end
+-- Fall Death --
+function DN_Fall(ply,TarPly)
+	if TarPly:Health() >= 100 then
+		TarPly:SetHealth(100)
+	end
+	TarPly:SetVelocity(Vector(0,0,1000))
+	timer.Simple( 1, function() TarPly:SetVelocity(Vector(0,0,-1000)) end )
+end

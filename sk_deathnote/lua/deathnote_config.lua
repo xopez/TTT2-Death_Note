@@ -23,5 +23,5 @@ TTT_DN_DeathTime 	= 15
 TTT_DN_AlwaysDies 	= false 	
 -- "Default: false" If set true it will 100% kill / even though you can change TTT_DN_Chance to 1 for it this is more neater and does not do the roll
 
-TTT_DN_Chance 		= 4
--- "Default: 4"If "TTT_DN_AlwaysDies" is set to true don't worry about this
+TTT_DN_Chance 		= {2,4}
+-- "Default: {2,4} "If "TTT_DN_AlwaysDies" is set to true don't worry about this

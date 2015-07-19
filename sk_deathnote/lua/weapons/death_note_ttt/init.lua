@@ -13,8 +13,8 @@ SWEP.AutoSwitchFrom = true
 local tttdeathnoteuseage = false
 local TheDeathType = "heartattack"
 
-resource.AddFile("vgui/Deathnote_VGUI.vmt")
-resource.AddFile("vgui/icon/TTT_DeathNote_Shop.vmt")
+resource.AddFile("vgui/deathnote_vgui.vmt")
+resource.AddFile("vgui/icon/ttt_deathnote_shop.vmt")
 
 if CLIENT then
 else

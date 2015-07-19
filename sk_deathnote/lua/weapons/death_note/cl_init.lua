@@ -46,7 +46,7 @@ DeathNote:ShowCloseButton( false )
 DeathNote:MakePopup()
 
 DeathNote.Paint = function()
-	tex = surface.GetTextureID( "vgui/Deathnote_VGUI"  )
+	tex = surface.GetTextureID( "vgui/deathnote_vgui"  )
 	surface.SetTexture(tex)
 	surface.SetDrawColor(255,255,255,255)
 	surface.DrawTexturedRect(0, 0, 400, 600)

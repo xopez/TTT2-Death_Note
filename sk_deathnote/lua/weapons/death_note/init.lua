@@ -35,7 +35,7 @@ util.AddNetworkString( "DeathType" )
 		if deathnoteuseage == 0 then
 		if TarPly:Alive() then
 			deathnoteuseage = 1
-			timer.Simple( 5, function()
+			timer.Simple( DN_DeathTime, function()
 				if TarPly:Alive() then
 					if TheDeathType == "heartattack" then
 						DN_HeartAttack(ply,TarPly)
@@ -45,6 +45,9 @@ util.AddNetworkString( "DeathType" )
 					end
 					if TheDeathType == "fall" then
 						DN_Fall(ply,TarPly)
+					end
+					if TheDeathType == "explode" then
+						DN_Explode(ply,TarPly)
 					end
 					deathnoteuseage = 0
 					AdminMessege(ply,TarPly,TheDeathType)
@@ -189,4 +192,58 @@ function DN_Fall(ply,TarPly)
 	end
 	TarPly:SetVelocity(Vector(0,0,1000))
 	timer.Simple( 1, function() TarPly:SetVelocity(Vector(0,0,-1000)) end )
+end
+-- Explode --
+-- function DN_Explode(ply,TarPly)
+	-- for k,v in pairs(player.GetAll()) do
+		-- v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..TarPly:Nick().." Has been set to explode in "..Explode_Time.." seconds.")
+	-- end
+	-- timer.Simple(Explode_Time, function()
+		-- TarPly:SetHealth(1)
+		-- local DN_Explosion = ents.Create("env_explosion")
+		-- DN_Explosion:SetPos(TarPly:GetPos())
+
+		-- DN_Explosion:Spawn()
+		-- DN_Explosion:SetKeyValue("iMagnitude", 100)
+		-- DN_Explosion:Fire("Explode", 0, 0)
+		-- DN_Explosion:EmitSound("BaseGrenade.Explode", 100, 100)
+	-- end)
+-- end
+
+function DN_Explode(ply,TarPly)
+print("1")
+	for k,v in pairs(player.GetAll()) do
+		v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..TarPly:Nick().." Has been set to explode in "..DN_ExplodeTimer.." seconds.")
+	end
+	Explode_Time_Left = DN_ExplodeTimer
+	timer.Create( "Expolde_Countdown", 1, 0, function()
+		Explode_Time_Left = Explode_Time_Left - 1
+		
+		if Explode_Time_Left <= 5 then
+			if DN_ExplodeCountDown then
+				for k,v in pairs(player.GetAll()) do
+					v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..TarPly:Nick().." Will explode in "..Explode_Time_Left.." seconds!!!!")
+				end
+			end
+		end
+		
+		if !TarPly:Alive() then
+			for k,v in pairs(player.GetAll()) do
+				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..TarPly:Nick().." has died before he exploded.")
+			end
+			timer.Remove("Expolde_Countdown")
+		end
+		
+		if Explode_Time_Left <= 0 then
+			timer.Remove("Expolde_Countdown")
+			TarPly:SetHealth(1)
+			local DN_Explosion = ents.Create("env_explosion")
+			DN_Explosion:SetPos(TarPly:GetPos())
+	
+			DN_Explosion:Spawn()
+			DN_Explosion:SetKeyValue("iMagnitude", 100)
+			DN_Explosion:Fire("Explode", 0, 0)
+			DN_Explosion:EmitSound("BaseGrenade.Explode", 100, 100)
+		end
+	end)
 end

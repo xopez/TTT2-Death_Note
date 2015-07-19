@@ -13,6 +13,9 @@ SWEP.AutoSwitchFrom = true
 local tttdeathnoteuseage = false
 local TheDeathType = "heartattack"
 
+resource.AddFile("vgui/Deathnote_VGUI.vmt")
+resource.AddFile("vgui/icon/TTT_DeathNote_Shop.vmt")
+
 if CLIENT then
 else
 	function SWEP:GetRepeating()
@@ -51,13 +54,21 @@ util.AddNetworkString( "tttDeathType" )
 				tttdeathnoteuseage = false
 				if TarPly:Alive() then
 						if TheDeathType == "heartattack" then
-							DN_HeartAttack(ply,TarPly)
+							DN_TTT_HeartAttack(ply,TarPly)
 						end
 						if TheDeathType == "ignite" then
-							DN_Ignite(ply,TarPly)
+							DN_TTT_Ignite(ply,TarPly)
 						end
 						if TheDeathType == "fall" then
-							DN_Fall(ply,TarPly)
+							DN_TTT_Fall(ply,TarPly)
+						end
+						if TheDeathType == "explode" then
+							if TTT_Explode_Enable == true then
+								DN_TTT_Explode(ply,TarPly)
+							else
+								ply:PrintMessage(HUD_PRINTTALK,"DeathNote: Sorry, Explode is not enabled switching to Heart Attack.")
+								DN_TTT_HeartAttack(ply,TarPly)
+							end
 						end
 					ply:StripWeapon("death_note_ttt")
 				else
@@ -70,20 +81,39 @@ util.AddNetworkString( "tttDeathType" )
 					tttdeathnoteuseage = false
 					if TarPly:Alive() then
 						if TheDeathType == "heartattack" then
-							DN_HeartAttack(ply,TarPly)
+							DN_TTT_HeartAttack(ply,TarPly)
 						end
 						if TheDeathType == "ignite" then
-							DN_Ignite(ply,TarPly)
+							DN_TTT_Ignite(ply,TarPly)
 						end
 						if TheDeathType == "fall" then
-							DN_Fall(ply,TarPly)
+							DN_TTT_Fall(ply,TarPly)
+						end
+						if TheDeathType == "explode" then
+							if TTT_Explode_Enable == true then
+								DN_TTT_Explode(ply,TarPly)
+							else
+								ply:PrintMessage(HUD_PRINTTALK,"DeathNote: Sorry, Explode is not enabled switching to Heart Attack.")
+								DN_TTT_HeartAttack(ply,TarPly)
+							end
 						end
 					ply:StripWeapon("death_note_ttt")
 					else
 						ply:PrintMessage(HUD_PRINTTALK,"DeathNote: That Person Is Already Dead, You did not lose the Death-Note")
 					end
 				else
-					ply:StripWeapon("death_note_ttt")
+					if TTT_LoseDNOnFail then
+						ply:StripWeapon("death_note_ttt")
+					else
+						ply:StripWeapon("death_note_ttt")
+						ply:PrintMessage(HUD_PRINTTALK,"DeathNote: You have lost the Deathnote for now but you will get it back in "..TTT_DNLockOut.." seconds.")
+						timer.Simple( TTT_DNLockOut, function()
+							if ply:Alive() then
+								ply:Give( "death_note_ttt" )
+								ply:PrintMessage(HUD_PRINTTALK,"DeathNote: The Deathnote has returned to your red bloody hands.")
+							end
+						end )
+					end
 					ply:PrintMessage(HUD_PRINTTALK,"DeathNote: You rolled a "..rolled.." And needed either a "..table.concat( TTT_DN_Chance, " " ))
 					tttdeathnoteuseage = false
 				end	
@@ -118,49 +148,9 @@ function SWEP:Reload()
 end
 
 function SWEP:PrimaryAttack()
-	local ply = self.Owner
-	if IsValid(self.Owner:GetEyeTrace().Entity) then
-		if self.Owner:GetEyeTrace().Entity:IsPlayer() then
-			local trKill = player.GetByID(self.Owner:GetEyeTrace().Entity:EntIndex())
-			if trKill:Alive() then
-				if !tttdeathnoteuseage then
-					if trKill:GetRole() != 1 then
-						tttdeathnoteuseage = true
-						timer.Simple( TTT_DN_DeathTime, function()
-							if TTT_DN_AlwaysDies then
-								tttdeathnoteuseage = false
-								if trKill:Alive() then
-									DN_HeartAttack(ply,trKill)
-									ply:StripWeapon("death_note_ttt")
-								else
-									ply:PrintMessage(HUD_PRINTTALK,"DeathNote: That Person already dead, Choose a new target.")
-								end
-							else
-								rolled = math.random(1,6)
-								if table.HasValue(TTT_DN_Chance, rolled) then
-									ply:PrintMessage(HUD_PRINTTALK,"DeathNote: You rolled a "..rolled)
-									tttdeathnoteuseage = false
-									if trKill:Alive() then
-										DN_HeartAttack(ply,trKill)
-										ply:StripWeapon("death_note_ttt")
-									else
-										ply:PrintMessage(HUD_PRINTTALK,"DeathNote: That Person Is Already Dead, You did not lose the Death-Note")
-									end
-								else
-									ply:StripWeapon("death_note_ttt")
-									ply:PrintMessage(HUD_PRINTTALK,"DeathNote: You rolled a "..rolled.." And needed either a "..table.concat( TTT_DN_Chance, " " ))
-									tttdeathnoteuseage = false
-								end	
-							end
-						end)
-					else
-						ply:PrintMessage(HUD_PRINTTALK,"DeathNote: "..trKill:Nick().." is a traitor, Do not attempt to team kill with the DN.")
-					end
-				else
-					ply:PrintMessage(HUD_PRINTTALK,"The deathnote is in cooldown.")
-				end
-			end
-		end
+	if ( SERVER ) then
+		umsg.Start( "tttdeathnote", self.Owner ) 
+		umsg.End()
 	end
 end
 
@@ -175,7 +165,7 @@ end
 --Multiple Death Types--
 ----------------------*/
 -- Heart Attack --
-function DN_HeartAttack(ply,TarPly)
+function DN_TTT_HeartAttack(ply,TarPly)
 	TarPly:Kill()
 	TarPly:PrintMessage(HUD_PRINTTALK,"DeathNote: Died via the Death-Note killed by '"..ply:Nick().."'")
 	for k,v in pairs(player.GetAll()) do
@@ -183,7 +173,7 @@ function DN_HeartAttack(ply,TarPly)
 	end
 end
 -- Ignite --
-function DN_Ignite(ply,TarPly)
+function DN_TTT_Ignite(ply,TarPly)
 	if TarPly:Health() >= 100 then
 		TarPly:SetHealth(100)
 	end
@@ -191,6 +181,13 @@ function DN_Ignite(ply,TarPly)
 		if !TarPly:Alive() then
 			timer.Remove("InstaIngniteDeathCheck")
 			TarPly:PrintMessage(HUD_PRINTTALK,"DeathNote: Died via the Death-Note killed by '"..ply:Nick().."'")
+		else
+			if !TarPly:IsOnFire() then
+				if TarPly:Health() >= 50 then
+					TarPly:SetHealth(50)
+				end
+				TarPly:Ignite( 5000000 )
+			end
 		end						
 	end)
 	TarPly:Ignite( 5000000 )
@@ -200,7 +197,7 @@ function DN_Ignite(ply,TarPly)
 	end
 end
 -- Fall Death --
-function DN_Fall(ply,TarPly)
+function DN_TTT_Fall(ply,TarPly)
 	if TarPly:Health() >= 100 then
 		TarPly:SetHealth(100)
 	end
@@ -220,4 +217,37 @@ function DN_Fall(ply,TarPly)
 	for k,v in pairs(player.GetAll()) do
 		v:PrintMessage(HUD_PRINTTALK,"DeathNote: "..TarPly:Nick()..", Has been flung via the Death-Note.")
 	end
+end
+-- Explode --
+function DN_TTT_Explode(ply,TarPly)
+	for k,v in pairs(player.GetAll()) do
+		v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..TarPly:Nick().." Has been set to explode in "..TTT_Explode_Time.." seconds!!!!")
+		v:PrintMessage(HUD_PRINTCENTER,"Deathnote: "..TarPly:Nick().." Has been set to explode in "..TTT_Explode_Time.." seconds!!!!")
+	end
+	TTT_Explode_Time_Left = TTT_Explode_Time
+	timer.Create( "TTT_Expolde_Countdown", 1, 0, function() 
+		TTT_Explode_Time_Left = TTT_Explode_Time_Left - 1
+		if TTT_Explode_Time_Left <= 5 then
+			for k,v in pairs(player.GetAll()) do
+				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..TarPly:Nick().." Will explode in "..TTT_Explode_Time_Left.." seconds!!!!")
+			end
+		end
+		if !TarPly:Alive() then
+			for k,v in pairs(player.GetAll()) do
+				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..TarPly:Nick().." has died before he exploded.")
+			end
+			timer.Remove("TTT_Expolde_Countdown")
+		end
+		if TTT_Explode_Time_Left <= 0 then
+			timer.Remove("TTT_Expolde_Countdown")
+			TarPly:SetHealth(1)
+			local DN_Explosion = ents.Create("env_explosion")
+			DN_Explosion:SetPos(TarPly:GetPos())
+	
+			DN_Explosion:Spawn()
+			DN_Explosion:SetKeyValue("iMagnitude", 100)
+			DN_Explosion:Fire("Explode", 0, 0)
+			DN_Explosion:EmitSound("BaseGrenade.Explode", 100, 100)
+		end
+	end )
 end

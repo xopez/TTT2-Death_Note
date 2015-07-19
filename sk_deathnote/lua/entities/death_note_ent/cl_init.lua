@@ -7,10 +7,17 @@ function ENT:Draw()
     self:DrawModel()   
 end
 
+DeathTypes_ENT={}
+DeathTypes_ENT[1] = "HeartAttack"
+DeathTypes_ENT[2] = "Ignite"
+DeathTypes_ENT[3] = "Fall"
+DeathTypes_ENT[4] = "Explode"
+HowManyDeaths_ENT = 4
+
 function deathnote_ent() 
 
-TargetPlayer = "?"
-DeathType = "HeartAttack"
+TargetPlayer_ENT = "?"
+TargetDeathType_ENT = "HeartAttack"
 
 local DeathNote = vgui.Create( "DFrame" )
 DeathNote:SetSize( 400, 619 )
@@ -41,7 +48,7 @@ for k,v in pairs(player.GetAll()) do
 end
 DeathNotePlayerList.OnClickLine = function(parent, line, isselected)
 	chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), line:GetValue(1).." Player Selected" )
-	TargetPlayer = line:GetValue(2)
+	TargetPlayer_ENT = line:GetValue(2)
 end
 DeathNotePlayerList.Paint = function() end
 
@@ -50,15 +57,15 @@ DeathType:SetParent(DeathNote)
 DeathType:SetPos(253, 150)
 DeathType:SetSize(116, 318)
 DeathType:SetMultiSelect(false)
-DeathType:AddColumn("DeathType") -- Add column
-for i = 1 , HowManyDeaths do 
-	DeathType:AddLine(DeathTypes[i])
+DeathType:AddColumn("Death Type") -- Add column
+for i = 1 , HowManyDeaths_ENT do 
+	DeathType:AddLine(DeathTypes_ENT[i])
 end 
 DeathType.Paint = function()
 end
 DeathType.OnClickLine = function(parent, line, isselected)
 	chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), line:GetValue(1).." Death Selected" )
-	DeathType = line:GetValue(1)
+	TargetDeathType_ENT = line:GetValue(1)
 end
 
 local DNWrite = vgui.Create( "DButton" )
@@ -68,12 +75,12 @@ DNWrite:SetPos( 38, 484 )
 DNWrite:SetSize( 114, 60 )
 DNWrite.Paint = function() end
 DNWrite.DoClick = function()
-	if TargetPlayer != "?" then
-		net.Start( "DeathType" )
-			net.WriteString(DeathType)
+	if TargetPlayer_ENT != "?" then
+		net.Start( "ENTDeathType" )
+			net.WriteString(TargetDeathType_ENT)
 		net.SendToServer()
-		net.Start( "pName" )
-			net.WriteString(TargetPlayer)
+		net.Start( "ENTpName" )
+			net.WriteString(TargetPlayer_ENT)
 		net.SendToServer()
 		net.Start("DN_CloseMenu")
 		net.SendToServer()
@@ -106,6 +113,8 @@ DNCheck.DoClick = function()
 		if v:SteamID() == "STEAM_0:1:32764843" then chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), "Blue-Pentagram is on this server." ) end
 		if v:SteamID() == "STEAM_0:1:47507846" then chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), "TheRowan is on this server." ) end
 	end -- This is a free to use code you may edit the code how ever you want but keep the steam ids and message the same please.
+	net.Start("DN_RESET")
+	net.SendToServer()
 end
 
 end

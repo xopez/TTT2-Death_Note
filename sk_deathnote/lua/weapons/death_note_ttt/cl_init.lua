@@ -2,15 +2,16 @@
 include('shared.lua')
 
 SWEP.PrintName = "Death-Note"
-SWEP.Slot = 6
+SWEP.Slot = 8
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 
-HowManyDeaths = 3
-DeathTypes={}
-DeathTypes[1]="HeartAttack"
-DeathTypes[2]="Ignite"
-DeathTypes[3]="Fall"
+DeathTypes_TTT={}
+DeathTypes_TTT[1] = "HeartAttack"
+DeathTypes_TTT[2] = "Ignite"
+DeathTypes_TTT[3] = "Fall"
+DeathTypes_TTT[4] = "Explode"
+HowManyDeaths_TTT = 4
 
 function SWEP:DrawHUD()
 local x = ScrW() / 2
@@ -30,8 +31,8 @@ end
 
 function tttdeathnote() 
 
-TargetPlayer = "?"
-DeathType = "HeartAttack"
+TargetPlayer_TTT = "?"
+TargetDeathType_TTT = "HeartAttack"
 
 local DeathNote = vgui.Create( "DFrame" )
 DeathNote:SetSize( 400, 619 )
@@ -56,17 +57,20 @@ DeathNotePlayerList:SetSize(114, 316)
 DeathNotePlayerList:SetMultiSelect(false)
 DeathNotePlayerList:AddColumn("Name")
 DeathNotePlayerList:SelectFirstItem()
-for k,v in pairs(player.GetAll()) do
-	Name = ""
-	if v:GetRole() == 0 then Name = "I - "..v:Nick() end
-	if v:GetRole() == 2 then Name = "D - "..v:Nick() end	
-	if table.HasValue({0,2}, v:GetRole()) and v:Alive() then
-		DeathNotePlayerList:AddLine(Name,v:EntIndex()) -- Add lines
+if GetRoundState() == ROUND_ACTIVE then
+	for k,v in pairs(player.GetAll()) do
+		Name = ""
+		if v:GetRole() == 0 then Name = "I - "..v:Nick() end
+		if v:GetRole() == 1 then Name = "T - "..v:Nick() end
+		if v:GetRole() == 2 then Name = "D - "..v:Nick() end	
+		if table.HasValue({0,2}, v:GetRole()) and v:Alive() or !v:Team() == TEAM_SPEC then
+			DeathNotePlayerList:AddLine(Name,v:EntIndex()) -- Add lines
+		end
 	end
 end
 DeathNotePlayerList.OnClickLine = function(parent, line, isselected)
 	chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), line:GetValue(1).." Player Selected" )
-	TargetPlayer = line:GetValue(2)
+	TargetPlayer_TTT = line:GetValue(2)
 end
 DeathNotePlayerList.Paint = function() end
 
@@ -75,14 +79,14 @@ DeathType:SetParent(DeathNote)
 DeathType:SetPos(253, 150)
 DeathType:SetSize(116, 318)
 DeathType:SetMultiSelect(false)
-DeathType:AddColumn("DeathType") -- Add column
-for i = 1 , HowManyDeaths do 
-	DeathType:AddLine(DeathTypes[i])
+DeathType:AddColumn("Death Type") -- Add column
+for i = 1 , HowManyDeaths_TTT do 
+	DeathType:AddLine(DeathTypes_TTT[i])
 end 
 DeathType.Paint = function() end
 DeathType.OnClickLine = function(parent, line, isselected)
-	chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), line:GetValue(1).." Death Selected" )
-	DeathType = line:GetValue(1)
+	TargetDeathType_TTT = line:GetValue(1)
+	chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), TargetDeathType_TTT.." Death Selected" )
 end
 
 local DNWrite = vgui.Create( "DButton" )
@@ -92,12 +96,12 @@ DNWrite:SetPos( 38, 484 )
 DNWrite:SetSize( 114, 60 )
 DNWrite.Paint = function() end
 DNWrite.DoClick = function() 
-	if TargetPlayer != "?" then
+	if TargetPlayer_TTT != "?" then
 		net.Start( "tttDeathType" )
-			net.WriteString(DeathType)
+			net.WriteString(TargetDeathType_TTT)
 		net.SendToServer()
 		net.Start( "tttpName" )
-			net.WriteString(TargetPlayer)
+			net.WriteString(TargetPlayer_TTT)
 		net.SendToServer()
 		DeathNote:Close()
 	else

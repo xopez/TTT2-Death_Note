@@ -555,7 +555,7 @@ SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = "none"
 
 SWEP.Base = "weapon_tttbase"
-SWEP.Kind = WEAPON_EQUIP1
+SWEP.Kind = WEAPON_ROLE
 SWEP.AutoSpawnable = false
 SWEP.AmmoEnt = ""
 SWEP.CanBuy = { ROLE_TRAITOR }

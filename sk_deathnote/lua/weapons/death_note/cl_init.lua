@@ -75,7 +75,7 @@ DeathType:SetSize(116, 318)
 DeathType:SetMultiSelect(false)
 DeathType:AddColumn("Death Type") -- Add column
 for i = 1 , HowManyDeaths do 
-	DeathType:AddLine(DeathTypes[i])
+		DeathType:AddLine(DeathTypes[i])
 end 
 DeathType.Paint = function()
 end
@@ -102,16 +102,6 @@ DNWrite.DoClick = function()
 	else
 		chat.AddText( Color( 25, 25, 25 ), "Deathnote: ", Color( 255, 255, 255 ), "Please choose a Target" )
 	end
-end
-
-local DNCloseButten = vgui.Create( "DButton" )
-DNCloseButten:SetParent( DeathNote ) -- Set parent to our "DermaPanel"
-DNCloseButten:SetText( "" )
-DNCloseButten:SetPos( 253, 484 )
-DNCloseButten:SetSize( 114, 60 )
-DNCloseButten.Paint = function() end
-DNCloseButten.DoClick = function()
-    DeathNote:Close()
 end
 
 local DNCloseButten = vgui.Create( "DButton" )

@@ -6,6 +6,7 @@ SWEP.Slot = 8
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 
+
 DeathTypes_TTT={}
 DeathTypes_TTT[1] = "HeartAttack"
 DeathTypes_TTT[2] = "Ignite"

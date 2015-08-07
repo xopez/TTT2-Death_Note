@@ -3,14 +3,11 @@
 
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
-AddCSLuaFile( "../../deathnote_config.lua" )
 include( 'shared.lua' )
-include( '../../deathnote_config.lua' )
 
 SWEP.Weight = 5
 SWEP.AutoSwitchTo = true
 SWEP.AutoSwitchFrom = true
-local deathnoteuseage = 0
 local TheDeathType = "heartattack"
 
 if CLIENT then
@@ -32,36 +29,41 @@ util.AddNetworkString( "DeathType" )
 	net.Receive( "pName", function( len, ply )
 		local plyName = tonumber(net.ReadString())
 		local TarPly = player.GetByID(plyName)
-		if deathnoteuseage == 0 then
-		if TarPly:Alive() then
-			deathnoteuseage = 1
-			timer.Simple( DN_DeathTime, function()
+		if ply:HasWeapon("death_note") then
+			if !ply.DeathNoteUse then
 				if TarPly:Alive() then
-					if TheDeathType == "heartattack" then
-						DN_HeartAttack(ply,TarPly)
-					end
-					if TheDeathType == "ignite" then
-						DN_Ignite(ply,TarPly)
-					end
-					if TheDeathType == "fall" then
-						DN_Fall(ply,TarPly)
-					end
-					if TheDeathType == "explode" then
-						DN_Explode(ply,TarPly)
-					end
-					deathnoteuseage = 0
-					AdminMessege(ply,TarPly,TheDeathType)
+					ply.DeathNoteUse = true
+					timer.Simple( DN_DeathTime, function()
+						if TarPly:Alive() then
+							if TheDeathType == "heartattack" then
+								DN_HeartAttack(ply,TarPly)
+							end
+							if TheDeathType == "ignite" then
+								DN_Ignite(ply,TarPly)
+							end
+							if TheDeathType == "fall" then
+								DN_Fall(ply,TarPly)
+							end
+							if TheDeathType == "explode" then
+								DN_Explode(ply,TarPly)
+							end
+							ply.DeathNoteUse = false
+							AdminMessege(ply,TarPly,TheDeathType)
+						else
+							ply:PrintMessage(HUD_PRINTTALK,"DeathNote: That Person Is Already Dead")
+							ply.DeathNoteUse = false
+							FailAdminMessege(ply,TarPly)
+						end
+					end)
 				else
-					ply:PrintMessage(HUD_PRINTTALK,"DeathNote: That Person Is Already Dead")
-					deathnoteuseage = 0
-					FailAdminMessege(ply,TarPly)
+					ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Dead")
 				end
-			end)
+			else
+				ply:PrintMessage(HUD_PRINTTALK,"The deathnote is in cooldown.")
+			end
 		else
-			ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Dead")
-		end
-		else
-			ply:PrintMessage(HUD_PRINTTALK,"The deathnote is in cooldown.")
+			ply:PrintMessage(HUD_PRINTTALK,"DeathNote: I am sorry, I'm not allowed to do that for you, Please grab my weapon and try again")
+			AdminMessegeExploit(ply,TarPly)
 		end
 	end )
 end
@@ -71,13 +73,17 @@ function SWEP:Reload()
 		for k,v in pairs(player.GetAll()) do
 			if ulx_installed then
 				if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-					deathnoteuseage = 0
-					self.Owner:PrintMessage(HUD_PRINTTALK,"You Reset the deathnote")
+					for a,b in pairs(player.GetAll()) do
+						b.DeathNoteUse = false
+					end
+					self.Owner:PrintMessage(HUD_PRINTTALK,"DeathNote: You Reset Everyone's the DeathNote")
 				end
 			else
 				if v:IsAdmin() then
-					deathnoteuseage = 0
-					self.Owner:PrintMessage(HUD_PRINTTALK,"You Reset the deathnote")
+					for a,b in pairs(player.GetAll()) do
+						b.DeathNoteUse = false
+					end
+					self.Owner:PrintMessage(HUD_PRINTTALK,"DeathNote: You Reset Everyone's the DeathNote")
 				end
 			end
 		end
@@ -90,12 +96,12 @@ function SWEP:PrimaryAttack()
 		if self.Owner:GetEyeTrace().Entity:IsPlayer() then
 			local trKill = player.GetByID(self.Owner:GetEyeTrace().Entity:EntIndex())
 			if trKill:Alive() then
-				if deathnoteuseage == 0 then
-				deathnoteuseage = 1
+				if !ply.DeathNoteUse then
+				ply.DeathNoteUse = true
 				timer.Simple( 5, function()
 					if trKill:Alive() then
 						trKill:Kill()
-						deathnoteuseage = 0
+						ply.DeathNoteUse = false
 						for k,v in pairs(player.GetAll()) do
 							if ulx_installed then
 								if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
@@ -109,7 +115,7 @@ function SWEP:PrimaryAttack()
 						end
 					else
 						ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Dead")
-						deathnoteuseage = 0
+						ply.DeathNoteUse = false
 						for k,v in pairs(player.GetAll()) do
 							if ulx_installed then
 								if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
@@ -169,6 +175,20 @@ function FailAdminMessege(ply,TarPly)
 	end
 end
 
+function AdminMessegeExploit(ply,TarPly)
+	for k,v in pairs( player.GetAll() ) do
+		if ulx_installed then
+			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick()..", Had nearly exploited the deathnote on "..TarPly:Nick()..". (died while useing the DN or Trying to use the function with no DeeathNote)")
+			end
+		else
+			if v:IsAdmin() then
+				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick()..", Had nearly exploited the deathnote on "..TarPly:Nick()..". (died while useing the DN or Trying to use the function with no DeeathNote)")
+			end
+		end
+	end
+end
+
 /*----------------------
 --Multiple Death Types--
 ----------------------*/
@@ -194,24 +214,7 @@ function DN_Fall(ply,TarPly)
 	timer.Simple( 1, function() TarPly:SetVelocity(Vector(0,0,-1000)) end )
 end
 -- Explode --
--- function DN_Explode(ply,TarPly)
-	-- for k,v in pairs(player.GetAll()) do
-		-- v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..TarPly:Nick().." Has been set to explode in "..Explode_Time.." seconds.")
-	-- end
-	-- timer.Simple(Explode_Time, function()
-		-- TarPly:SetHealth(1)
-		-- local DN_Explosion = ents.Create("env_explosion")
-		-- DN_Explosion:SetPos(TarPly:GetPos())
-
-		-- DN_Explosion:Spawn()
-		-- DN_Explosion:SetKeyValue("iMagnitude", 100)
-		-- DN_Explosion:Fire("Explode", 0, 0)
-		-- DN_Explosion:EmitSound("BaseGrenade.Explode", 100, 100)
-	-- end)
--- end
-
 function DN_Explode(ply,TarPly)
-print("1")
 	for k,v in pairs(player.GetAll()) do
 		v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..TarPly:Nick().." Has been set to explode in "..DN_ExplodeTimer.." seconds.")
 	end

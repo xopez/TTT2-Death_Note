@@ -33,7 +33,7 @@ util.AddNetworkString( "DeathType" )
 			if !ply.DeathNoteUse then
 				if TarPly:Alive() then
 					ply.DeathNoteUse = true
-					timer.Simple( DN_DeathTime, function()
+					timer.Simple( GetConVar("DeathNote_DeathTime"):GetInt(), function()
 						if TarPly:Alive() then
 							if TheDeathType == "heartattack" then
 								DN_HeartAttack(ply,TarPly)
@@ -69,9 +69,9 @@ util.AddNetworkString( "DeathType" )
 end
 
 function SWEP:Reload()
-	if Debug_Mode_DN then
+	if GetConVar("DeathNote_Debug"):GetBool() then
 		for k,v in pairs(player.GetAll()) do
-			if ulx_installed then
+			if GetConVar("DeathNote_ulx_installed"):GetBool() then
 				if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
 					for a,b in pairs(player.GetAll()) do
 						b.DeathNoteUse = false
@@ -102,31 +102,11 @@ function SWEP:PrimaryAttack()
 					if trKill:Alive() then
 						trKill:Kill()
 						ply.DeathNoteUse = false
-						for k,v in pairs(player.GetAll()) do
-							if ulx_installed then
-								if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..TarPly:Nick())
-								end
-							else
-								if v:IsAdmin() then
-									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." has used the deathnote on "..TarPly:Nick())
-								end
-							end
-						end
+						AdminMessege(ply,TarPly,TheDeathType)
 					else
 						ply:PrintMessage(HUD_PRINTTALK,"That Person Is Already Dead")
 						ply.DeathNoteUse = false
-						for k,v in pairs(player.GetAll()) do
-							if ulx_installed then
-								if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the deathnote on "..TarPly:Nick().." but failed")
-								end
-							else
-								if v:IsAdmin() then
-									v:PrintMessage(HUD_PRINTTALK,ply:Nick().." tried the deathnote on "..TarPly:Nick().." but failed")
-								end
-							end
-						end
+						FailAdminMessege(ply,TarPly)
 					end
 				end)
 				else
@@ -149,7 +129,7 @@ end
 
 function AdminMessege(ply,TarPly,TheDeathType)
 	for k,v in pairs( player.GetAll() ) do
-		if ulx_installed then
+		if GetConVar("DeathNote_ulx_installed"):GetBool() then
 			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
 				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick().." has used the deathnote on "..TarPly:Nick()..". ("..TheDeathType..")")
 			end
@@ -163,7 +143,7 @@ end
 
 function FailAdminMessege(ply,TarPly)
 	for k,v in pairs( player.GetAll() ) do
-		if ulx_installed then
+		if GetConVar("DeathNote_ulx_installed"):GetBool() then
 			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
 				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick().." tried the deathnote on "..TarPly:Nick().." but failed")
 			end
@@ -177,7 +157,7 @@ end
 
 function AdminMessegeExploit(ply,TarPly)
 	for k,v in pairs( player.GetAll() ) do
-		if ulx_installed then
+		if GetConVar("DeathNote_ulx_installed"):GetBool() then
 			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
 				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick()..", Had nearly exploited the deathnote on "..TarPly:Nick()..". (died while useing the DN or Trying to use the function with no DeeathNote)")
 			end
@@ -215,6 +195,7 @@ function DN_Fall(ply,TarPly)
 end
 -- Explode --
 function DN_Explode(ply,TarPly)
+	DN_ExplodeTimer = GetConVar("DeathNote_ExplodeTimer"):GetInt()
 	for k,v in pairs(player.GetAll()) do
 		v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..TarPly:Nick().." Has been set to explode in "..DN_ExplodeTimer.." seconds.")
 	end
@@ -223,7 +204,7 @@ function DN_Explode(ply,TarPly)
 		Explode_Time_Left = Explode_Time_Left - 1
 		
 		if Explode_Time_Left <= 5 then
-			if DN_ExplodeCountDown then
+			if GetConVar("DeathNote_ExplodeCountDown"):GetBool() then
 				for k,v in pairs(player.GetAll()) do
 					v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..TarPly:Nick().." Will explode in "..Explode_Time_Left.." seconds!!!!")
 				end

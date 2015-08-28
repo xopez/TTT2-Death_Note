@@ -46,8 +46,8 @@ util.AddNetworkString( "DN_RESET" )
 	end)
 	
 	net.Receive("DN_RESET", function(length, ply)
-		if Debug_Mode_DN then
-			if ulx_installed then
+		if GetConVar("DeathNote_Debug"):GetBool() then
+			if GetConVar("DeathNote_ulx_installed"):GetBool() then
 				if table.HasValue(ulx_premissions, ply:GetNWString("usergroup")) then
 					deathnoteuseage = 0
 					ply:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: DeathNote Reset")
@@ -74,7 +74,7 @@ util.AddNetworkString( "DN_RESET" )
 			if !ply.DeathNoteUse then
 				if TarPly:Alive() then
 					ply.DeathNoteUse = true
-					timer.Simple( DN_DeathTime, function()
+					timer.Simple( GetConVar("DeathNote_DeathTime"):GetInt(), function()
 						if TarPly:Alive() then
 							if TheDeathType == "heartattack" then
 								DN_HeartAttack_ENT(ply,TarPly)
@@ -113,7 +113,7 @@ end
 
 function AdminMessege_ENT(ply,TarPly,TheDeathType)
 	for k,v in pairs( player.GetAll() ) do
-		if ulx_installed then
+		if GetConVar("DeathNote_ulx_installed"):GetBool() then
 			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
 				v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..ply:Nick().." has used the DeathNote on "..TarPly:Nick()..". ("..TheDeathType..")")
 			end
@@ -127,7 +127,7 @@ end
 
 function FailAdminMessege_ENT(ply,TarPly)
 	for k,v in pairs( player.GetAll() ) do
-		if ulx_installed then
+		if GetConVar("DeathNote_ulx_installed"):GetBool() then
 			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
 				v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..ply:Nick().." tried the DeathNote on "..TarPly:Nick().." but failed")
 			end
@@ -165,6 +165,7 @@ function DN_Fall_ENT(ply,TarPly)
 end
 -- Explode --
 function DN_Explode_ENT(ply,TarPly)
+	DN_ExplodeTimer = GetConVar("DeathNote_ExplodeTimer"):GetInt()
 	for k,v in pairs(player.GetAll()) do
 		v:PrintMessage(HUD_PRINTTALK,"DeathNote: "..TarPly:Nick().." Has been set to explode in "..DN_ExplodeTimer.." seconds.")
 	end
@@ -173,7 +174,7 @@ function DN_Explode_ENT(ply,TarPly)
 		ENT_Explode_Time_Left = ENT_Explode_Time_Left - 1
 		
 		if ENT_Explode_Time_Left <= 5 then
-			if DN_ExplodeCountDown then
+			if GetConVar("DeathNote_ExplodeCountDown"):GetBool() then
 				for k,v in pairs(player.GetAll()) do
 					v:PrintMessage(HUD_PRINTTALK,"DeathNote: "..TarPly:Nick().." Will explode in "..ENT_Explode_Time_Left.." seconds!!!!")
 				end

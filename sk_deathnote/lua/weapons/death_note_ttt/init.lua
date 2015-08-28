@@ -46,8 +46,8 @@ util.AddNetworkString( "tttDeathType" )
 			if !ply.DeathNoteUse then
 				if TarPly:Alive() then
 					ply.DeathNoteUse = true
-					timer.Simple( TTT_DN_DeathTime, function()
-					if TTT_DN_AlwaysDies then -- Always Die
+					timer.Simple( GetConVar("DeathNote_TTT_DeathTime"):GetInt(), function()
+					if GetConVar("DeathNote_TTT_AlwaysDies"):GetBool() then -- Always Die
 						ply.DeathNoteUse = false
 						if TarPly:Alive() then
 								if TheDeathType == "heartattack" then
@@ -60,7 +60,7 @@ util.AddNetworkString( "tttDeathType" )
 									DN_TTT_Fall(ply,TarPly)
 								end
 								if TheDeathType == "explode" then
-									if TTT_Explode_Enable == true then
+									if GetConVar("DeathNote_TTT_Explode_Enable"):GetBool() == true then
 										DN_TTT_Explode(ply,TarPly)
 									else
 										ply:PrintMessage(HUD_PRINTTALK,"DeathNote: Sorry, Explode is not enabled switching to Heart Attack.")
@@ -87,7 +87,7 @@ util.AddNetworkString( "tttDeathType" )
 									DN_TTT_Fall(ply,TarPly)
 								end
 								if TheDeathType == "explode" then
-									if TTT_Explode_Enable == true then
+									if GetConVar("DeathNote_TTT_Explode_Enable"):GetBool() == true then
 										DN_TTT_Explode(ply,TarPly)
 									else
 										ply:PrintMessage(HUD_PRINTTALK,"DeathNote: Sorry, Explode is not enabled switching to Heart Attack.")
@@ -99,12 +99,12 @@ util.AddNetworkString( "tttDeathType" )
 								ply:PrintMessage(HUD_PRINTTALK,"DeathNote: That Person Is Already Dead, You did not lose the Death-Note")
 							end
 						else
-							if TTT_LoseDNOnFail then
+							if GetConVar("DeathNote_TTT_LoseDNOnFail"):GetBool() then
 								ply:StripWeapon("death_note_ttt")
 							else
 								ply:StripWeapon("death_note_ttt")
-								ply:PrintMessage(HUD_PRINTTALK,"DeathNote: You have lost the Deathnote for now but you will get it back in "..TTT_DNLockOut.." seconds.")
-								timer.Simple( TTT_DNLockOut, function()
+								ply:PrintMessage(HUD_PRINTTALK,"DeathNote: You have lost the Deathnote for now but you will get it back in "..GetConVar("DeathNote_TTT_DNLockOut"):GetInt().." seconds.")
+								timer.Simple( GetConVar("DeathNote_TTT_DNLockOut"):GetInt(), function()
 									if ply:Alive() then
 										ply:Give( "death_note_ttt" )
 										ply:PrintMessage(HUD_PRINTTALK,"DeathNote: The Deathnote has returned to your red bloody hands.")
@@ -239,6 +239,7 @@ function DN_TTT_Fall(ply,TarPly)
 end
 -- Explode --
 function DN_TTT_Explode(ply,TarPly)
+	TTT_Explode_Time = GetConVar("DeathNote_TTT_Explode_Time"):GetInt()
 	for k,v in pairs(player.GetAll()) do
 		v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..TarPly:Nick().." Has been set to explode in "..TTT_Explode_Time.." seconds!!!!")
 		v:PrintMessage(HUD_PRINTCENTER,"Deathnote: "..TarPly:Nick().." Has been set to explode in "..TTT_Explode_Time.." seconds!!!!")

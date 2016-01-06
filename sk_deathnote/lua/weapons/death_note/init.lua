@@ -270,10 +270,8 @@ function DN_Burial(ply,TarPly)
 	timer.Create( "BuryTime", 1, 15, function()
 		DN_Burial_Count = DN_Burial_Count + 1
 		if DN_Burial_Count <= 4 then
-			ply:PrintMessage(HUD_PRINTTALK,"Deathnote: "..DN_Burial_Count)
 			TarPly:SetPos(TarPly:GetPos() + Vector(0,0,-20))
 		else
-			ply:PrintMessage(HUD_PRINTTALK,"Deathnote: "..DN_Burial_Count)
 			TarPly:Freeze( true )
 			TarPly:SetHealth(TarPly:Health() - 10)
 			if TarPly:Health() <= 10 then

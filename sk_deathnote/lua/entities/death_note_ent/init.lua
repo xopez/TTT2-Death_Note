@@ -240,10 +240,8 @@ function DN_Burial_ENT(ply,TarPly)
 	timer.Create( "BuryTime", 1, 14, function()
 		DN_Burial_Count_ENT = DN_Burial_Count_ENT + 1
 		if DN_Burial_Count_ENT <= 4 then
-			ply:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..DN_Burial_Count_ENT)
 			TarPly:SetPos(TarPly:GetPos() + Vector(0,0,-20))
 		else
-			ply:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..DN_Burial_Count_ENT)
 			TarPly:Freeze( true )
 			TarPly:SetHealth(TarPly:Health() - 10)
 			if TarPly:Health() <= 10 then

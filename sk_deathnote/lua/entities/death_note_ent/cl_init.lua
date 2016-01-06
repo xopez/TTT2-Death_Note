@@ -1,4 +1,4 @@
-
+--DeathNote Ent cl_init
 
 
 include( 'shared.lua' )
@@ -8,16 +8,17 @@ function ENT:Draw()
 end
 
 DeathTypes_ENT={}
-DeathTypes_ENT[1] = "HeartAttack"
+DeathTypes_ENT[1] = "Heart-Attack"
 DeathTypes_ENT[2] = "Ignite"
 DeathTypes_ENT[3] = "Fall"
 DeathTypes_ENT[4] = "Explode"
-HowManyDeaths_ENT = 4
+DeathTypes_ENT[5] = "Premature burial"
+HowManyDeaths_ENT = 5
 
 function deathnote_ent() 
 
 TargetPlayer_ENT = "?"
-TargetDeathType_ENT = "HeartAttack"
+TargetDeathType_ENT = "Heart-Attack"
 
 local DeathNote = vgui.Create( "DFrame" )
 DeathNote:SetSize( 400, 619 )

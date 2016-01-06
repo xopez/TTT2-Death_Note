@@ -1,3 +1,4 @@
+-- TTT Weapon cli_init
 
 include('shared.lua')
 
@@ -8,11 +9,12 @@ SWEP.DrawCrosshair = false
 
 
 DeathTypes_TTT={}
-DeathTypes_TTT[1] = "HeartAttack"
+DeathTypes_TTT[1] = "Heart-Attack"
 DeathTypes_TTT[2] = "Ignite"
 DeathTypes_TTT[3] = "Fall"
 DeathTypes_TTT[4] = "Explode"
-HowManyDeaths_TTT = 4
+DeathTypes_TTT[5] = "Premature burial"
+HowManyDeaths_TTT = 5
 
 function SWEP:DrawHUD()
 local x = ScrW() / 2
@@ -33,7 +35,7 @@ end
 function tttdeathnote() 
 
 TargetPlayer_TTT = "?"
-TargetDeathType_TTT = "HeartAttack"
+TargetDeathType_TTT = "Heart-Attack"
 
 local DeathNote = vgui.Create( "DFrame" )
 DeathNote:SetSize( 400, 619 )

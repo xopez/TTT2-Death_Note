@@ -1,3 +1,4 @@
+--Weapon cl_init
 
 include('shared.lua')
 
@@ -8,11 +9,12 @@ SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 
 DeathTypes={}
-DeathTypes[1] = "HeartAttack"
+DeathTypes[1] = "Heart-Attack"
 DeathTypes[2] = "Ignite"
 DeathTypes[3] = "Fall"
 DeathTypes[4] = "Explode"
-HowManyDeaths = 4
+DeathTypes[5] = "Premature burial"
+HowManyDeaths = 5
 
 function SWEP:DrawHUD()
 local x = ScrW() / 2
@@ -33,7 +35,7 @@ end
 function deathnote() 
 
 TargetPlayer = "?"
-TargetDeathType = "HeartAttack"
+TargetDeathType = "Heart-Attack"
 
 local DeathNote = vgui.Create( "DFrame" )
 DeathNote:SetSize( 400, 619 )

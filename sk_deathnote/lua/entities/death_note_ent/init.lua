@@ -1,15 +1,19 @@
+-- DeathNote Ent Init
 
 AddCSLuaFile( "cl_init.lua" ) 
 AddCSLuaFile( "shared.lua" )
 
 include('shared.lua')
-local TheDeathType = "heartattack"
+local TheDeathType = "heart-attack"
+ENT_FallInUse = false
+ENT_ExplodeInUse = false
+ENT_BurialInUse = false
 
 function ENT:Initialize()
 	self:SetModel( "models/death_note/DeathNote.mdl" )
-	self:PhysicsInit( SOLID_VPHYSICS )      -- Make us work with physics,
-	self:SetMoveType( MOVETYPE_VPHYSICS )   -- after all, gmod is a physics
-	self:SetSolid( SOLID_VPHYSICS )         -- Toolbox
+	self:PhysicsInit( SOLID_VPHYSICS )
+	self:SetMoveType( MOVETYPE_VPHYSICS )
+	self:SetSolid( SOLID_VPHYSICS )
 	
 	local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -76,17 +80,32 @@ util.AddNetworkString( "DN_RESET" )
 					ply.DeathNoteUse = true
 					timer.Simple( GetConVar("DeathNote_DeathTime"):GetInt(), function()
 						if TarPly:Alive() then
-							if TheDeathType == "heartattack" then
+							if TheDeathType == "heart-attack" then
 								DN_HeartAttack_ENT(ply,TarPly)
 							end
 							if TheDeathType == "ignite" then
 								DN_Ignite_ENT(ply,TarPly)
 							end
 							if TheDeathType == "fall" then
-								DN_Fall_ENT(ply,TarPly)
-							end 
+								if !ENT_FallInUse then
+									DN_Fall_ENT(ply,TarPly)
+								else
+									ply:PrintMessage(HUD_PRINTTALK,"DeathNote: Sorry another player is useing that death")
+								end
+							end
 							if TheDeathType == "explode" then
-								DN_Explode_ENT(ply,TarPly)
+								if !ENT_ExplodeInUse then
+									DN_Explode_ENT(ply,TarPly)
+								else
+									ply:PrintMessage(HUD_PRINTTALK,"DeathNote: Sorry another player is useing that death")
+								end
+							end
+							if TheDeathType == "premature burial" then
+								if !ENT_ENT_BurialInUse then
+									DN_Burial_ENT(ply,TarPly)
+								else
+									ply:PrintMessage(HUD_PRINTTALK,"DeathNote: Sorry another player is useing that death")
+								end
 							end 
 							ply.DeathNoteUse = false
 							AdminMessege_ENT(ply,TarPly,TheDeathType)
@@ -157,17 +176,24 @@ function DN_Ignite_ENT(ply,TarPly)
 end
 -- Fall Death --
 function DN_Fall_ENT(ply,TarPly)
+	FallInUse = true
 	if TarPly:Health() >= 100 then
 		TarPly:SetHealth(100)
 	end
 	TarPly:SetVelocity(Vector(0,0,1000))
-	timer.Simple( 1, function() TarPly:SetVelocity(Vector(0,0,-1000)) end )
+	timer.Simple( 1, function() 
+		if TarPly:Alive() then
+			TarPly:SetVelocity(Vector(0,0,-1000))
+		end 
+		FallInUse = false
+	end )
 end
 -- Explode --
 function DN_Explode_ENT(ply,TarPly)
+	ENT_ExplodeInUse = true
 	DN_ExplodeTimer = GetConVar("DeathNote_ExplodeTimer"):GetInt()
 	for k,v in pairs(player.GetAll()) do
-		v:PrintMessage(HUD_PRINTTALK,"DeathNote: "..TarPly:Nick().." Has been set to explode in "..DN_ExplodeTimer.." seconds.")
+		v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..TarPly:Nick().." Has been set to explode in "..DN_ExplodeTimer.." seconds.")
 	end
 	ENT_Explode_Time_Left = DN_ExplodeTimer
 	timer.Create( "ENT_Expolde_Countdown", 1, 0, function()
@@ -176,21 +202,23 @@ function DN_Explode_ENT(ply,TarPly)
 		if ENT_Explode_Time_Left <= 5 then
 			if GetConVar("DeathNote_ExplodeCountDown"):GetBool() then
 				for k,v in pairs(player.GetAll()) do
-					v:PrintMessage(HUD_PRINTTALK,"DeathNote: "..TarPly:Nick().." Will explode in "..ENT_Explode_Time_Left.." seconds!!!!")
+					v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..TarPly:Nick().." Will explode in "..ENT_Explode_Time_Left.." seconds!!!!")
 				end
 			end
 		end
 		
 		if !TarPly:Alive() then
 			for k,v in pairs(player.GetAll()) do
-				v:PrintMessage(HUD_PRINTTALK,"DeathNote: "..TarPly:Nick().." has died before he exploded.")
+				v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..TarPly:Nick().." has died before he exploded.")
 			end
+			ENT_ExplodeInUse = false
 			timer.Remove("ENT_Expolde_Countdown")
 		end
 		
 		if ENT_Explode_Time_Left <= 0 then
 			timer.Remove("ENT_Expolde_Countdown")
 			TarPly:SetHealth(1)
+			TarPly:GodDisable()
 			local DN_Explosion = ents.Create("env_explosion")
 			DN_Explosion:SetPos(TarPly:GetPos())
 	
@@ -198,6 +226,46 @@ function DN_Explode_ENT(ply,TarPly)
 			DN_Explosion:SetKeyValue("iMagnitude", 100)
 			DN_Explosion:Fire("Explode", 0, 0)
 			DN_Explosion:EmitSound("BaseGrenade.Explode", 100, 100)
+			ENT_ExplodeInUse = false
+		end
+	end)
+end
+-- Burial --
+function DN_Burial_ENT(ply,TarPly)
+	ENT_BurialInUse = true
+	local DN_Burial_Count_ENT = 0
+	if TarPly:Health() >= 100 then
+		TarPly:SetHealth(100)
+	end
+	timer.Create( "BuryTime", 1, 14, function()
+		DN_Burial_Count_ENT = DN_Burial_Count_ENT + 1
+		if DN_Burial_Count_ENT <= 4 then
+			ply:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..DN_Burial_Count_ENT)
+			TarPly:SetPos(TarPly:GetPos() + Vector(0,0,-20))
+		else
+			ply:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..DN_Burial_Count_ENT)
+			TarPly:Freeze( true )
+			TarPly:SetHealth(TarPly:Health() - 10)
+			if TarPly:Health() <= 10 then
+				TarPly:Kill()
+			end
+			if !TarPly:Alive() then
+				TarPly:Freeze( false )
+				timer.Remove("BuryTime")
+				for k,v in pairs(player.GetAll()) do
+					v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..TarPly:Nick().." has been buried alive!")
+				end
+				ENT_BurialInUse = false
+			end
+			if DN_Burial_Count_ENT == 14 then
+				TarPly:Kill()
+				TarPly:Freeze( false )
+				timer.Remove("BuryTime")
+				for k,v in pairs(player.GetAll()) do
+					v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..TarPly:Nick().." has been buried alive!")
+				end
+				ENT_BurialInUse = false
+			end
 		end
 	end)
 end

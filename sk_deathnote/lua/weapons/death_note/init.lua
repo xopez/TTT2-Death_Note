@@ -65,6 +65,14 @@ util.AddNetworkString( "DeathType" )
 									ply:PrintMessage(HUD_PRINTTALK,"DeathNote: Sorry another player is useing that death")
 								end
 							end
+							-- TEST DEATHS START
+							if TheDeathType == "head explode-wip" then
+								DN_HeadExplode(ply,TarPly)
+							end
+							if TheDeathType == "grave test" then
+								DN_GraveTest(ply,TarPly)
+							end
+							-- TEST DEATHS END
 							ply.DeathNoteUse = false
 							AdminMessege(ply,TarPly,TheDeathType)
 						else
@@ -147,45 +155,51 @@ function SWEP:SecondaryAttack()
 end
 
 function AdminMessege(ply,TarPly,TheDeathType)
-	for k,v in pairs( player.GetAll() ) do
-		if GetConVar("DeathNote_ulx_installed"):GetBool() then
-			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick().." has used the deathnote on "..TarPly:Nick()..". ("..TheDeathType..")")
-			end
-		else
-			if v:IsAdmin() then
-				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick().." has used the deathnote on "..TarPly:Nick()..". ("..TheDeathType..")")
+	if GetConVar("DeathNote_Admin_Messeges"):GetBool() then
+		for k,v in pairs( player.GetAll() ) do
+			if GetConVar("DeathNote_ulx_installed"):GetBool() then
+				if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+					v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick().." has used the deathnote on "..TarPly:Nick()..". ("..TheDeathType..")")
+				end
+			else
+				if v:IsAdmin() then
+					v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick().." has used the deathnote on "..TarPly:Nick()..". ("..TheDeathType..")")
+				end
 			end
 		end
-	end
+	else return false end
 end
 
 function FailAdminMessege(ply,TarPly)
-	for k,v in pairs( player.GetAll() ) do
-		if GetConVar("DeathNote_ulx_installed"):GetBool() then
-			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick().." tried the deathnote on "..TarPly:Nick().." but failed")
-			end
-		else
-			if v:IsAdmin() then
-				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick().." tried the deathnote on "..TarPly:Nick().." but failed")
+	if GetConVar("DeathNote_Admin_Messeges"):GetBool() then
+		for k,v in pairs( player.GetAll() ) do
+			if GetConVar("DeathNote_ulx_installed"):GetBool() then
+				if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+					v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick().." tried the deathnote on "..TarPly:Nick().." but failed")
+				end
+			else
+				if v:IsAdmin() then
+					v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick().." tried the deathnote on "..TarPly:Nick().." but failed")
+				end
 			end
 		end
-	end
+	else return false end
 end
 
 function AdminMessegeExploit(ply,TarPly)
-	for k,v in pairs( player.GetAll() ) do
-		if GetConVar("DeathNote_ulx_installed"):GetBool() then
-			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick()..", Had nearly exploited the deathnote on "..TarPly:Nick()..". (died while useing the DN or Trying to use the function with no DeeathNote)")
-			end
-		else
-			if v:IsAdmin() then
-				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick()..", Had nearly exploited the deathnote on "..TarPly:Nick()..". (died while useing the DN or Trying to use the function with no DeeathNote)")
+	if GetConVar("DeathNote_Admin_Messeges"):GetBool() then
+		for k,v in pairs( player.GetAll() ) do
+			if GetConVar("DeathNote_ulx_installed"):GetBool() then
+				if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+					v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick()..", Had nearly exploited the deathnote on "..TarPly:Nick()..". (died while useing the DN or Trying to use the function with no DeeathNote)")
+				end
+			else
+				if v:IsAdmin() then
+					v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick()..", Had nearly exploited the deathnote on "..TarPly:Nick()..". (died while useing the DN or Trying to use the function with no DeeathNote)")
+				end
 			end
 		end
-	end
+	else return false end
 end
 
 /*----------------------
@@ -296,4 +310,65 @@ function DN_Burial(ply,TarPly)
 			end
 		end
 	end)
+end
+
+Grave_Model = "models/props_c17/gravestone004a.mdl"
+-- Heart Attack --
+function DN_GraveTest(ply,TarPly)
+	local Grave = ents.Create( "ent_death_mark" )
+	if ( !IsValid( Grave ) ) then return end // Check whether we successfully made an entity, if not - bail
+	local SetNewModel = Grave_Model
+	Grave:SetPos( TarPly:GetPos() + Vector(0,0,10) )
+	Grave:SetAngles( TarPly:GetAngles() )
+	Grave:SetOwner(TarPly)
+	Grave:SetModel(Grave_Model)
+	Grave:Spawn(SetNewModel)
+	
+	TarPly:Kill()
+	TarPly:PrintMessage(HUD_PRINTTALK,"DeathNote: Died via the Death-Note killed by '"..ply:Nick().."'")
+end
+
+
+-- Head Explode -- WIP
+	HeadBone = TarPly:LookupBone("ValveBiped.Bip01_Head1") 
+	HeadSize = 1
+	timer.Create( "HeadGrow", 0.01, 0, function()
+		ply:PrintMessage(HUD_PRINTTALK,HeadSize) 
+		if TarPly:Alive() then
+			TarPly:ManipulateBoneScale( HeadBone, Vector(HeadSize,HeadSize,HeadSize))
+			HeadSize = HeadSize + 0.05
+			if HeadSize >= 2 then
+				timer.Remove("HeadGrow")
+				timer.Simple( 2, function() TarPly:ManipulateBoneScale( HeadBone, Vector(1,1,1)) end )
+				ply:PrintMessage(HUD_PRINTTALK,"Deathnote: HEAD TO BLOW")
+				TarPly:ManipulateBoneScale( HeadBone, Vector(0,0,0))
+				TarPly:Kill()
+				
+				
+				
+				if !TarPly:Alive() and TarPly:GetRagdollEntity() then
+ 
+					local Ragdoll = TarPly:GetRagdollEntity()
+					Ragdoll:ManipulateBoneScale( HeadBone, Vector(0,0,0))
+				end
+				
+				
+				/* local vPoint = TarPly:GetPos() + Vector(0,0,20)
+				local effectdata = EffectData()
+				effectdata:SetStart( vPoint ) // not sure if we need a start and origin (endpoint) for this effect, but whatever
+				effectdata:SetOrigin( vPoint )
+				effectdata:SetScale( 1 )
+				util.Effect( "bloodspray", effectdata )	*/
+				
+				
+				HeadSize = 1
+			end
+		else
+			timer.Remove("HeadGrow")
+			HeadSize = 1
+			TarPly:ManipulateBoneScale( HeadBone, Vector(1,1,1))
+		end
+	end)
+	-- timer.Simple( 5, function() TarPly:ManipulateBoneScale( HeadBone, Vector(1,1,1)) end )
+	ply:PrintMessage(HUD_PRINTTALK,"Deathnote: New Death Is A WIP!!!!")
 end

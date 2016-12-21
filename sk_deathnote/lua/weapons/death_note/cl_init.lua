@@ -13,8 +13,10 @@ DeathTypes[1] = "Heart-Attack"
 DeathTypes[2] = "Ignite"
 DeathTypes[3] = "Fall"
 DeathTypes[4] = "Explode"
-DeathTypes[5] = "Premature burial"
-HowManyDeaths = 5
+DeathTypes[5] = "Premature Burial"
+DeathTypes[6] = "Head Explode-WIP"
+DeathTypes[7] = "Grave Test"
+HowManyDeaths = 7
 
 function SWEP:DrawHUD()
 local x = ScrW() / 2

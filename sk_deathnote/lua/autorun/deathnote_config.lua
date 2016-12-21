@@ -4,12 +4,20 @@
 ulx_premissions	= {"superadmin","admin","operator","owner"}
 TTT_DN_Chance	= {2,4}
 
+
+--------------------------------------
+-- Don't Change Under This Line!!!! --
+--------------------------------------
+
 -- General
 if !ConVarExists( "DeathNote_ulx_installed") then
 	CreateConVar( "DeathNote_ulx_installed", 0, {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY} )
 end
 if !ConVarExists( "DeathNote_Debug") then
 	CreateConVar( "DeathNote_Debug", 0, {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY} )
+end
+if !ConVarExists( "DeathNote_Admin_Messeges") then
+	CreateConVar( "DeathNote_Admin_Messeges", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY} )
 end
 -- Default
 if !ConVarExists( "DeathNote_DeathTime") then

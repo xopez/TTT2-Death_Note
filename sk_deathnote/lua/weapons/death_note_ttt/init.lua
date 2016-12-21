@@ -212,17 +212,19 @@ function SWEP:SecondaryAttack()
 end
 
 function AdminMessegeExploit_TTT(ply,TarPly)
-	for k,v in pairs( player.GetAll() ) do
-		if ulx_installed then
-			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick()..", Had nearly exploited the deathnote on "..TarPly:Nick()..". (died while useing the DN or Trying to use the function with no DeathNote)")
-			end
-		else
-			if v:IsAdmin() then
-				v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick()..", Had nearly exploited the deathnote on "..TarPly:Nick()..". (died while useing the DN or Trying to use the function with no DeathNote)")
+	if GetConVar("DeathNote_Admin_Messeges"):GetBool() then
+		for k,v in pairs( player.GetAll() ) do
+			if ulx_installed then
+				if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+					v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick()..", Had nearly exploited the deathnote on "..TarPly:Nick()..". (died while useing the DN or Trying to use the function with no DeathNote)")
+				end
+			else
+				if v:IsAdmin() then
+					v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..ply:Nick()..", Had nearly exploited the deathnote on "..TarPly:Nick()..". (died while useing the DN or Trying to use the function with no DeathNote)")
+				end
 			end
 		end
-	end
+	else return false end
 end
 
 /*----------------------

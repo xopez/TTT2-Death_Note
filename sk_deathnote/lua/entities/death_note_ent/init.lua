@@ -131,31 +131,35 @@ function ENT:Think()
 end
 
 function AdminMessege_ENT(ply,TarPly,TheDeathType)
-	for k,v in pairs( player.GetAll() ) do
-		if GetConVar("DeathNote_ulx_installed"):GetBool() then
-			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-				v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..ply:Nick().." has used the DeathNote on "..TarPly:Nick()..". ("..TheDeathType..")")
-			end
-		else
-			if v:IsAdmin() then
-				v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..ply:Nick().." has used the DeathNote on "..TarPly:Nick()..". ("..TheDeathType..")")
+	if GetConVar("DeathNote_Admin_Messeges"):GetBool() then
+		for k,v in pairs( player.GetAll() ) do
+			if GetConVar("DeathNote_ulx_installed"):GetBool() then
+				if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+					v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..ply:Nick().." has used the DeathNote on "..TarPly:Nick()..". ("..TheDeathType..")")
+				end
+			else
+				if v:IsAdmin() then
+					v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..ply:Nick().." has used the DeathNote on "..TarPly:Nick()..". ("..TheDeathType..")")
+				end
 			end
 		end
-	end
+	else return false end
 end
 
 function FailAdminMessege_ENT(ply,TarPly)
-	for k,v in pairs( player.GetAll() ) do
-		if GetConVar("DeathNote_ulx_installed"):GetBool() then
-			if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
-				v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..ply:Nick().." tried the DeathNote on "..TarPly:Nick().." but failed")
-			end
-		else
-			if v:IsAdmin() then
-				v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..ply:Nick().." tried the DeathNote on "..TarPly:Nick().." but failed")
+	if GetConVar("DeathNote_Admin_Messeges"):GetBool() then
+		for k,v in pairs( player.GetAll() ) do
+			if GetConVar("DeathNote_ulx_installed"):GetBool() then
+				if table.HasValue(ulx_premissions, v:GetNWString("usergroup")) then
+					v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..ply:Nick().." tried the DeathNote on "..TarPly:Nick().." but failed")
+				end
+			else
+				if v:IsAdmin() then
+					v:PrintMessage(HUD_PRINTTALK,"DeathNote Ent: "..ply:Nick().." tried the DeathNote on "..TarPly:Nick().." but failed")
+				end
 			end
 		end
-	end
+	else return false end
 end
 
 /*----------------------

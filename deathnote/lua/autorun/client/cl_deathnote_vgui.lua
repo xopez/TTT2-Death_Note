@@ -194,18 +194,6 @@ function deathnote_gui_ttt(DeathTypes, dn_type)
 	DNCheck:SetPos(260, 22)
 	DNCheck:SetSize(40, 20)
 	DNCheck.Paint = function() end
-	DNCheck.DoClick = function()
-		for k, v in pairs(player.GetAll()) do
-			if v:SteamID() == "STEAM_0:1:32764843" then
-				chat.AddText(Color(25, 25, 25), "Deathnote: ", Color(255, 255, 255), "Blue-Pentagram is on this server.")
-			end
-
-			if v:SteamID() == "STEAM_0:1:47507846" then
-				chat.AddText(Color(25, 25, 25), "Deathnote: ", Color(255, 255, 255), "TheRowan is on this server.")
-			end
-		end
-	end
-	-- This is a free to use code you may edit the code how ever you want but keep the steam ids and message the same please.
 end
 
 --[[

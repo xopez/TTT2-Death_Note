@@ -58,23 +58,6 @@ if not ConVarExists("DeathNote_TTT_DNLockOut") then
 	CreateConVar("DeathNote_TTT_DNLockOut", 30, {FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_NOTIFY})
 end
 
-local version = "0.2.0"
-http.Fetch(
-	"https://raw.githubusercontent.com/BluePentagram/Death_Note/master/version.txt",
-	function(body, len, headers, code)
-		if GetConVar("DeathNote_Update_Messege"):GetBool() then
-			local githubversion = body
-			if githubversion ~= version then
-				if SERVER then
-					print("Deathnote: Your DeathNote version is different, Server Vesion: " .. version .. ", Github Vesion: " .. githubversion)
-				elseif CLIENT then
-					chat.AddText(Color(25, 25, 25), "Deathnote: ", color_white, "Server DeathNote version is different, Server Vesion: " .. version .. ", Github Vesion: " .. githubversion)
-				end
-			end
-		end
-	end
-)
-
 concommand.Add(
 	"DeathNote_Copy_Module",
 	function(ply, cmd, args)

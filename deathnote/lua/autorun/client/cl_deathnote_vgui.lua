@@ -121,14 +121,11 @@ function deathnote_gui_ttt(DeathTypes, dn_type)
 	if GetRoundState() == ROUND_ACTIVE then
 		for k, v in ipairs(player.GetAll()) do
 			Name = ""
-			if v:GetRole() == 0 then
-				Name = "I - " .. v:Nick()
-			elseif v:GetRole() == 1 then
-				Name = "T - " .. v:Nick()
-			elseif v:GetRole() == 2 then
-				Name = "D - " .. v:Nick()
+			local plyRoleData = v:GetSubRoleData()
+			if plyRoleData.isPublicRole then
+				Name = string.Left(v:GetRoleString(), 1) .. " - " .. v:Nick()
 			else
-				Name = v:Nick()
+				Name = "I - " .. v:Nick()
 			end
 
 			local teammate = TTT2 and v:GetTeam() == LocalPlayer():GetTeam() or v:GetRole() == LocalPlayer():GetRole()

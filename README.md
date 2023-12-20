@@ -1,15 +1,14 @@
 Death_Note
 ==========
 
-This is the Death Note add-on that is on the steam workshop,
-I have decided to upload it to git-hub as a dev tool for the two
-creators when we work on it, and a easier way to get the raw script files.
+This is a fixed version compatible only for TTT2.
+Credits to original author.
+Steam: https://steamcommunity.com/sharedfiles/filedetails/?id=278185787
+GitHub: https://github.com/BluePentagram/Death_Note
 
-!!!!THIS VERSION MIGHT INCLUDE LUA ERRORS!!!!
-For a nice clean experise with 99.9% no bugs then
-use the script form the workshop
+Only public visible roles are visible to the user. So no hidden role get's revealed.
 
-Workshop = http://steamcommunity.com/sharedfiles/filedetails/?id=278185787
+Workshop = https://steamcommunity.com/sharedfiles/filedetails/?id=3118796974
 
 Script Creators =
 Blue-Pentagram

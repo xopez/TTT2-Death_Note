@@ -119,21 +119,20 @@ function deathnote_gui_ttt(DeathTypes, dn_type)
 	DeathNotePlayerList:AddColumn("Name")
 	DeathNotePlayerList:SelectFirstItem()
 	if GetRoundState() == ROUND_ACTIVE then
-		for k, v in pairs(player.GetAll()) do
+		for k, v in ipairs(player.GetAll()) do
 			Name = ""
 			if v:GetRole() == 0 then
 				Name = "I - " .. v:Nick()
-			end
-
-			if v:GetRole() == 1 then
+			elseif v:GetRole() == 1 then
 				Name = "T - " .. v:Nick()
-			end
-
-			if v:GetRole() == 2 then
+			elseif v:GetRole() == 2 then
 				Name = "D - " .. v:Nick()
+			else
+				Name = v:Nick()
 			end
 
-			if table.HasValue({0, 2}, v:GetRole()) and v:Alive() or not v:Team() == TEAM_SPEC then
+			local teammate = TTT2 and v:GetTeam() == LocalPlayer():GetTeam() or v:GetRole() == LocalPlayer():GetRole()
+			if not teammate and v:Alive() and v:Team() ~= TEAM_SPEC then
 				DeathNotePlayerList:AddLine(Name, v:EntIndex()) -- Add lines
 			end
 		end

@@ -67,17 +67,6 @@ http.Fetch("https://raw.githubusercontent.com/BluePentagram/Death_Note/master/ve
 	end
 end)
 
-DeathnoteCustomDeathCode = [[
-function dn_module_customdeath(ply,TarPly,TTT)
-	if !TTT then
-		-- Sandbox Code Version
-	else -- TTT Version
-		-- TTT Code Version
-	end
-end
-hook.Add( "dn_module_customdeath", "DN Custom Death Death", dn_module_customdeath )
-]]
-
 concommand.Add( "DeathNote_Copy_Module", function( ply, cmd, args )
 	print( "-----------------------------------------------------------------------------------" )
 	print( DeathnoteCustomDeathCode )

@@ -1,13 +1,6 @@
 
 
 function dn_module_ignite(ply,TarPly,TTT)
-	if !TTT then
-		if TarPly:Health() >= 100 then
-			TarPly:SetHealth(100)
-		end
-		TarPly:Ignite( 5000000 )
-		TarPly:PrintMessage(HUD_PRINTTALK,"DeathNote: Ignited via the Death-Note.")
-	else
 		TTT_IgniteInUse = true
 		if TarPly:Health() >= 100 then
 			TarPly:SetHealth(100)
@@ -30,7 +23,6 @@ function dn_module_ignite(ply,TarPly,TTT)
 		TarPly:PrintMessage(HUD_PRINTTALK,"DeathNote: Ignited via the Death-Note.")
 		for k,v in pairs(player.GetAll()) do
 			v:PrintMessage(HUD_PRINTTALK,"DeathNote: "..TarPly:Nick()..", Ignited via the Death-Note.")
-		end
 	end
 end
 hook.Add( "dn_module_ignite" , "DN Iginite Death", dn_module_ignite )

@@ -3,50 +3,6 @@
 function dn_module_prematureburial(ply,TarPly,TTT)
 	Grave_Model = "models/props_c17/gravestone004a.mdl"
 	Shovel_Model = "models/props_junk/Shovel01a.mdl"
-	if !TTT then -- NON TTT
-		BurialInUse = true
-		local Pos = Vector(0,0,0)
-		local DN_Burial_Count = 0
-		local TarPlyPos = 0
-		local HasGrave = false
-		if TarPly:Health() >= 100 then
-			TarPly:SetHealth(100)
-		end
-		timer.Create( "BuryTime", 1, 15, function()
-			DN_Burial_Count = DN_Burial_Count + 1
-			if TarPlyPos == 0 then
-				Pos = TarPly:GetPos()
-				TarPlyPos = 1
-			end
-			if DN_Burial_Count <= 4 then
-				TarPly:SetPos(TarPly:GetPos() + Vector(0,0,-20))
-			else
-				PreBuryGrave(Pos,TarPly,HasGrave)
-				TarPly:Freeze( true )
-				TarPly:SetHealth(TarPly:Health() - 10)
-				if TarPly:Health() <= 10 then
-					TarPly:Kill()
-				end
-				if !TarPly:Alive() then
-					TarPly:Freeze( false )
-					timer.Remove("BuryTime")
-					for k,v in pairs(player.GetAll()) do
-						v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..TarPly:Nick().." has been buried alive!")
-					end
-					BurialInUse = false
-				end
-				if DN_Burial_Count == 15 then
-					TarPly:Kill()
-					TarPly:Freeze( false )
-					timer.Remove("BuryTime")
-					for k,v in pairs(player.GetAll()) do
-						v:PrintMessage(HUD_PRINTTALK,"Deathnote: "..TarPly:Nick().." has been buried alive!")
-					end
-					BurialInUse = false
-				end
-			end
-		end)
-	else -- TTT
 		TTT_BurialInUse = true
 		local Pos = Vector(0,0,0)
 		local DN_Burial_Count = 0
@@ -88,7 +44,6 @@ function dn_module_prematureburial(ply,TarPly,TTT)
 				end
 			end
 		end)
-	end
 end
 hook.Add( "dn_module_prematureburial", "DN Premature Bury Death", dn_module_prematureburial )
 

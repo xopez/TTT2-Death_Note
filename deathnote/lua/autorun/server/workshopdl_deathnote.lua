@@ -1,4 +1,1 @@
-
-
-resource.AddWorkshop( "278185787" )
-resource.AddFile( "resource/fonts/DEATHNOTEFont.ttf" )
+resource.AddFile("resource/fonts/deathnotefont.ttf")

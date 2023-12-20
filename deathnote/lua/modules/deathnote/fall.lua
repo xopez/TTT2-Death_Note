@@ -1,19 +1,6 @@
 
 
 function dn_module_fall(ply,TarPly,TTT)
-	if !TTT then
-		FallInUse = true
-		if TarPly:Health() >= 100 then
-			TarPly:SetHealth(100)
-		end
-		TarPly:SetVelocity(Vector(0,0,1000))
-		timer.Simple( 1, function() 
-			if TarPly:Alive() then
-				TarPly:SetVelocity(Vector(0,0,-1000))
-			end 
-			FallInUse = false
-		end )
-	else
 		TTT_FallInUse = true
 		if TarPly:Health() >= 100 then
 			TarPly:SetHealth(100)
@@ -35,6 +22,5 @@ function dn_module_fall(ply,TarPly,TTT)
 		for k,v in pairs(player.GetAll()) do
 			v:PrintMessage(HUD_PRINTTALK,"DeathNote: "..TarPly:Nick()..", Has been flung via the Death-Note.")
 		end
-	end
 end
 hook.Add( "dn_module_fall", "DN fall Death", dn_module_fall )

@@ -5,9 +5,9 @@ This is a fixed version compatible only for TTT2.
 
 Credits to original author.
 
-Steam: https://steamcommunity.com/sharedfiles/filedetails/?id=278185787
+Original Steam: https://steamcommunity.com/sharedfiles/filedetails/?id=278185787
 
-GitHub: https://github.com/BluePentagram/Death_Note
+Original GitHub: https://github.com/BluePentagram/Death_Note
 
 Only public visible roles are visible to the user. So no hidden role get's revealed.
 

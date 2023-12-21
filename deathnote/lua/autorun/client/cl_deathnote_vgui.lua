@@ -116,16 +116,16 @@ function deathnote_gui_ttt(DeathTypes, dn_type)
 	DeathNotePlayerList:SetPos(38, 150)
 	DeathNotePlayerList:SetSize(114, 316)
 	DeathNotePlayerList:SetMultiSelect(false)
-	DeathNotePlayerList:AddColumn("Name")
+	DeathNotePlayerList:AddColumn("[Role] Name")
 	DeathNotePlayerList:SelectFirstItem()
 	if GetRoundState() == ROUND_ACTIVE then
 		for k, v in ipairs(player.GetAll()) do
 			Name = ""
 			local plyRoleData = v:GetSubRoleData()
 			if plyRoleData.isPublicRole then
-				Name = string.Left(v:GetRoleString(), 1) .. " - " .. v:Nick()
+				Name = "[" .. string.Left(v:GetRoleString(), 1) .. "] " .. v:Nick()
 			else
-				Name = "I - " .. v:Nick()
+				Name = "[I] " .. v:Nick()
 			end
 
 			local teammate = TTT2 and v:GetTeam() == LocalPlayer():GetTeam() or v:GetRole() == LocalPlayer():GetRole()

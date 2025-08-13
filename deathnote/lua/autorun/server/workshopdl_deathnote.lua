@@ -1,1 +1,0 @@
-resource.AddFile("resource/fonts/deathnotefont.ttf")
